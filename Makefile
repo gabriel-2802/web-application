@@ -13,7 +13,7 @@ db_down:
 
 # Open psql CLI inside the running container
 db_cli:
-	$(COMPOSE) exec db psql -U myuser -d mydb
+	docker exec -it postgres_db psql -U admin -d my_pq_db
 
 # Restart the container
 db_restart: down up
