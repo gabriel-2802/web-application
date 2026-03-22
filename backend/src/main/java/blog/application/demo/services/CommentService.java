@@ -23,13 +23,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
-public class CommentService {
+public class CommentService extends AbstractService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
     private final CommentMapper commentMapper;
+
+    public CommentService(UserRepository uRepo, CommentRepository cRepo, PostRepository pRepo, CommentMapper cMapper) {
+        super(uRepo);
+        commentRepository = cRepo;
+        postRepository = pRepo;
+        commentMapper = cMapper;
+    }
 
     /**
      * Creates a new comment on a post
@@ -193,23 +198,5 @@ public class CommentService {
         commentRepository.deleteById(commentId);
 
         return ResponseEntity.ok(responseDto);
-    }
-
-    /**
-     * Helper method to get the currently authenticated user
-     * @return the AbstractUser object
-     * @throws UnauthorizedException if user is not authenticated
-     */
-    private AbstractUser getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null) {
-            throw new UnauthorizedException("User not authenticated");
-        }
-
-        String username = authentication.getName();
-
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UnauthorizedException("User not found"));
     }
 }

@@ -3,6 +3,8 @@ package blog.application.demo.entities;
 import blog.application.demo.entities.users.Writer;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -15,8 +17,14 @@ public class PostCollection {
     @Column(name = "collection_id")
     private Long id;
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean pinned = false;
+
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, updatable = false)
+    LocalDateTime createdAt;
 
     private String description;
 
@@ -27,4 +35,7 @@ public class PostCollection {
     // posts must survive collection deletion
     @OneToMany(mappedBy = "collection")
     private List<Post> posts;
+
+    @PrePersist
+    protected void onCreate() { createdAt = LocalDateTime.now(); }
 }

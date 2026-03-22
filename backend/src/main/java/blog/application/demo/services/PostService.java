@@ -10,24 +10,30 @@ import blog.application.demo.mappers.PostMapper;
 import blog.application.demo.repositories.PostCollectionRepository;
 import blog.application.demo.repositories.PostRepository;
 import blog.application.demo.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
-public class PostService {
+public class PostService extends AbstractService{
     private final PostRepository postRepository;
     private final PostCollectionRepository collectionRepository;
     private final PostMapper postMapper;
-    private final UserRepository userRepository;
+
+    public PostService(UserRepository userRepository, PostRepository postRepository, 
+                       PostCollectionRepository collectionRepository, PostMapper postMapper) {
+        super(userRepository);
+        this.postRepository = postRepository;
+        this.collectionRepository = collectionRepository;
+        this.postMapper = postMapper;
+    }
+
+        
 
     /**
      * Creates a new post for the authenticated writer
@@ -107,13 +113,7 @@ public class PostService {
             throw new UnauthorizedException("You can only update your own posts");
         }
 
-        // validate input
-        if (postDto.title() != null && !postDto.title().isBlank()) {
-            post.setTitle(postDto.title());
-        }
-        if (postDto.content() != null && !postDto.content().isBlank()) {
-            post.setContent(postDto.content());
-        }
+
         if (postDto.imageUrl() != null) {
             post.setImageUrl(postDto.imageUrl());
         }
@@ -166,29 +166,5 @@ public class PostService {
                 .toList();
 
         return ResponseEntity.ok(postDtos);
-    }
-
-    /**
-     * Helper method to get the currently authenticated Writer
-     * @return the Writer object
-     * @throws UnauthorizedException if user is not authenticated or not a Writer
-     */
-    private Writer getCurrentWriter() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
-        if (authentication == null) {
-            throw new UnauthorizedException("User not authenticated");
-        }
-        
-        String username = authentication.getName();
-        
-        if (username == null || username.isBlank()) {
-            throw new UnauthorizedException("Invalid authentication credentials");
-        }
-        
-        return userRepository.findByUsername(username)
-                .filter(user -> user instanceof Writer)
-                .map(user -> (Writer) user)
-                .orElseThrow(() -> new UnauthorizedException("User not found or is not a Writer"));
     }
 }
