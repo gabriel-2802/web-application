@@ -88,12 +88,39 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException e) {
-        Map<String, String> errors = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException e) {
+        Map<String, Object> validationErrors = new HashMap<>();
+        Map<String, String> fieldErrors = new HashMap<>();
+        
         e.getBindingResult()
                 .getFieldErrors()
-                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-        return ResponseEntity.badRequest().body(errors);
+                .forEach(error -> {
+                    String fieldName = error.getField();
+                    String errorCode = error.getCode();
+                    String defaultMessage = error.getDefaultMessage();
+                    
+                    assert errorCode != null;
+                    String preciseMessage = switch (errorCode) {
+                        case "NotNull" -> String.format("Field '%s' cannot be null", fieldName);
+                        case "NotBlank" -> String.format("Field '%s' cannot be blank or empty", fieldName);
+                        case "NotEmpty" -> String.format("Field '%s' cannot be empty", fieldName);
+                        case "Email" -> String.format("Field '%s' must be a valid email address", fieldName);
+                        case "Size" -> String.format("Field '%s' has invalid size: %s", fieldName, defaultMessage);
+                        case "Min" -> String.format("Field '%s' must be greater than or equal to minimum value", fieldName);
+                        case "Max" -> String.format("Field '%s' must be less than or equal to maximum value", fieldName);
+                        case "Pattern" -> String.format("Field '%s' format is invalid", fieldName);
+                        default -> defaultMessage;
+                    };
+                    
+                    fieldErrors.put(fieldName, preciseMessage);
+                });
+        
+        validationErrors.put("timestamp", LocalDateTime.now());
+        validationErrors.put("status", HttpStatus.BAD_REQUEST.value());
+        validationErrors.put("error", "Validation Failed");
+        validationErrors.put("fieldErrors", fieldErrors);
+        
+        return ResponseEntity.badRequest().body(validationErrors);
     }
 
     @ExceptionHandler(NullPointerException.class)

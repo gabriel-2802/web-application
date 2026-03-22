@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,7 +18,7 @@ public class PostController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ROLE_WRITER')")
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
+    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
         return postService.createPost(postDto);
     }
 
@@ -33,7 +34,7 @@ public class PostController {
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ROLE_WRITER')")
-    public ResponseEntity<PostDto> updatePost(@PathVariable int id, @RequestBody PostDto postDto) {
+    public ResponseEntity<PostDto> updatePost(@PathVariable int id, @Valid @RequestBody PostDto postDto) {
         return postService.updatePost(id, postDto);
     }
 
