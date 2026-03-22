@@ -5,6 +5,7 @@ import blog.application.demo.dto.request.UpdateEmailRequest;
 import blog.application.demo.dto.request.UpdatePasswordRequest;
 import blog.application.demo.dto.request.UpdateUsernameRequest;
 import blog.application.demo.dto.response.UserProfileResponse;
+import blog.application.demo.dto.response.WriterProfileResponse;
 import blog.application.demo.exceptions.ExistingEmailException;
 import blog.application.demo.exceptions.ExistingUsernameException;
 import blog.application.demo.exceptions.UnauthorizedException;
@@ -86,7 +87,37 @@ public class UserController {
     }
 
     /**
+     * Get a writer's complete public profile with their posts and collections
+     * @param writerId the ID of the writer
+     * @return WriterProfileResponse with profile information, posts, and collections
+     */
+    @GetMapping("/writers/{writerId}/profile")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<WriterProfileResponse> getWriterProfile(@PathVariable Long writerId) {
+        return userService.getWriterProfile(writerId);
+    }
+
+    /**
+     * Get current authenticated writer's complete profile with their posts and collections
+     * @return WriterProfileResponse with profile information, posts, and collections
+     * @throws UnauthorizedException if current user is not a writer
+     */
+    @GetMapping("/writer-profile")
+    public ResponseEntity<WriterProfileResponse> getMyWriterProfile() {
+        return userService.getMyWriterProfile();
+    }
+
+    /**
      * Delete current user's account permanently
+     * 
+     * For Writers:
+     * - All posts authored by this writer are automatically deleted
+     * - All collections owned by this writer are automatically deleted
+     * - All comments authored by this writer are intelligently deleted with replies promoted
+     * 
+     * For Viewers:
+     * - All comments authored by this viewer are intelligently deleted with replies promoted
+     * 
      * @return Success message confirming account deletion
      */
     @DeleteMapping("/account")

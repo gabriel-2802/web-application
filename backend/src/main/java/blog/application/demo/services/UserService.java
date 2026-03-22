@@ -5,12 +5,22 @@ import blog.application.demo.dto.request.UpdateEmailRequest;
 import blog.application.demo.dto.request.UpdatePasswordRequest;
 import blog.application.demo.dto.request.UpdateUsernameRequest;
 import blog.application.demo.dto.response.UserProfileResponse;
+import blog.application.demo.dto.response.WriterProfileResponse;
+import blog.application.demo.dto.response.PostResponse;
+import blog.application.demo.dto.response.CollectionResponse;
 import blog.application.demo.entities.Comment;
 import blog.application.demo.entities.users.AbstractUser;
+import blog.application.demo.entities.Post;
+import blog.application.demo.entities.PostCollection;
 import blog.application.demo.exceptions.ExistingEmailException;
 import blog.application.demo.exceptions.ExistingUsernameException;
+import blog.application.demo.exceptions.ResourceNotFoundException;
 import blog.application.demo.exceptions.UnauthorizedException;
+import blog.application.demo.mappers.PostMapper;
+import blog.application.demo.mappers.CollectionMapper;
 import blog.application.demo.repositories.CommentRepository;
+import blog.application.demo.repositories.PostRepository;
+import blog.application.demo.repositories.PostCollectionRepository;
 import blog.application.demo.repositories.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,11 +36,21 @@ import java.util.stream.Collectors;
 public class UserService extends AbstractService {
     
     private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
+    private final PostCollectionRepository collectionRepository;
+    private final PostMapper postMapper;
+    private final CollectionMapper collectionMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, CommentRepository commentRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, CommentRepository commentRepository, PostRepository postRepository,
+                       PostCollectionRepository collectionRepository, PostMapper postMapper, CollectionMapper collectionMapper,
+                       PasswordEncoder passwordEncoder) {
         super(userRepository);
         this.commentRepository = commentRepository;
+        this.postRepository = postRepository;
+        this.collectionRepository = collectionRepository;
+        this.postMapper = postMapper;
+        this.collectionMapper = collectionMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -140,17 +160,82 @@ public class UserService extends AbstractService {
     }
 
     /**
+     * Get a writer's complete public profile with posts and collections
+     * @param writerId the ID of the writer
+     * @return WriterProfileResponse with profile, posts, and collections
+     * @throws ResourceNotFoundException if writer not found
+     */
+    @Transactional(readOnly = true)
+    public ResponseEntity<WriterProfileResponse> getWriterProfile(Long writerId) {
+        AbstractUser user = userRepository.findById(writerId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + writerId));
+        
+        if (!user.getUserType().equals("WRITER")) {
+            throw new ResourceNotFoundException("User with id: " + writerId + " is not a writer");
+        }
+        
+        // Get all posts by this writer
+        List<PostResponse> posts = postRepository.findAll().stream()
+                .filter(post -> post.getAuthor().getId().equals(writerId))
+                .map(postMapper::toResponse)
+                .collect(Collectors.toList());
+        
+        // Get all collections owned by this writer
+        List<CollectionResponse> collections = collectionRepository.findAll().stream()
+                .filter(collection -> collection.getOwner().getId().equals(writerId))
+                .map(collectionMapper::toResponse)
+                .collect(Collectors.toList());
+        
+        WriterProfileResponse profile = new WriterProfileResponse(
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getUserType(),
+            user.getBio(),
+            user.getProfileImageUrl(),
+            user.getWebsiteUrl(),
+            user.getLocation(),
+            user.getProfessionalTitle(),
+            null,
+            null,
+            user.getAuthorities().stream()
+                .map(role -> role.getAuthority())
+                .collect(Collectors.toSet()),
+            posts,
+            collections
+        );
+        
+        return ResponseEntity.ok(profile);
+    }
+
+    /**
+     * Get current authenticated writer's profile with their posts and collections
+     * @return WriterProfileResponse with profile, posts, and collections
+     * @throws UnauthorizedException if current user is not a writer
+     */
+    @Transactional(readOnly = true)
+    public ResponseEntity<WriterProfileResponse> getMyWriterProfile() {
+        AbstractUser currentUser = getCurrentUser();
+        
+        if (!currentUser.getUserType().equals("WRITER")) {
+            throw new UnauthorizedException("Only writers can access this endpoint");
+        }
+        
+        return getWriterProfile(currentUser.getId());
+    }
+
+    /**
      * Delete user's account permanently
      * 
      * For Writers:
      * - All posts authored by this writer are automatically deleted (cascade.ALL on Writer.posts)
      * - All posts cascade their deletion to their comments (cascade.ALL on Post.comments)
      * - All collections owned by this writer are automatically deleted (cascade.ALL on PostCollection.posts)
-     * - All comments authored by this writer are automatically deleted (cascade.ALL on AbstractUser.comments)
      * 
-     * For Viewers:
-     * - All comments authored by this viewer are automatically deleted (cascade.ALL on AbstractUser.comments)
-     * - User account is deleted
+     * For All Users:
+     * - All comments authored by this user are intelligently deleted:
+     *   * Child comments are promoted to parent level (preserving threads)
+     *   * Then the user's comments are deleted
      * 
      * WARNING: This operation is irreversible!
      * 
@@ -203,8 +288,8 @@ public class UserService extends AbstractService {
             user.getWebsiteUrl(),
             user.getLocation(),
             user.getProfessionalTitle(),
-            null, // createdAt - would need to add to entity
-            null, // updatedAt - would need to add to entity
+            null,
+            null,
             user.getAuthorities().stream()
                 .map(role -> role.getAuthority())
                 .collect(Collectors.toSet())

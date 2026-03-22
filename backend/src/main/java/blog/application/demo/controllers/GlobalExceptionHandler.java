@@ -7,6 +7,7 @@ import blog.application.demo.exceptions.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,6 +25,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Map<String, Object>> handleAuthenticationException(AuthenticationException e) {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+    /**
+     * Handle user not found exceptions (401 Unauthorized)
+     * This occurs when a token references a user that no longer exists
+     */
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleUsernameNotFoundException(UsernameNotFoundException e) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "User not found or has been deleted");
     }
 
     /**
