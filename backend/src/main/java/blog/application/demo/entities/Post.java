@@ -27,7 +27,6 @@ public class Post {
 
     private LocalDateTime updatedAt;
 
-    // Only Writers can author posts — enforced at the service layer
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
     private Writer author;

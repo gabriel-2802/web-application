@@ -22,6 +22,9 @@ public class Comment {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = true, updatable = false)
+    private LocalDateTime updatedAt;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
     private AbstractUser author;
@@ -39,5 +42,13 @@ public class Comment {
     private List<Comment> replies;
 
     @PrePersist
-    protected void onCreate() { createdAt = LocalDateTime.now(); }
+    protected void onCreate() { 
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() { 
+        updatedAt = LocalDateTime.now(); 
+    }
 }

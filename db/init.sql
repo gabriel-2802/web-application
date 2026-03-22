@@ -9,3 +9,7 @@ INSERT INTO roles (authority) VALUES
     ('ROLE_ADMIN'),
     ('ROLE_WRITER'),
     ('ROLE_VIEWER');
+
+CREATE INDEX idx_posts_search ON posts USING gin(
+    to_tsvector('english', title || ' ' || content)
+);

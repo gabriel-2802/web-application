@@ -27,14 +27,4 @@ public class PostCollection {
     // posts must survive collection deletion
     @OneToMany(mappedBy = "collection")
     private List<Post> posts;
-
-    @PreRemove
-    private void preRemove() {
-        // Set all posts' collections to null before deletion
-        // Note: For better performance in production, consider using a bulk update query
-        // via a custom repository method instead of loading all posts into memory
-        if (posts != null && !posts.isEmpty()) {
-            posts.forEach(p -> p.setCollection(null));
-        }
-    }
 }
