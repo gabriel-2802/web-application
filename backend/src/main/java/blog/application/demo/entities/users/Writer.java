@@ -13,8 +13,31 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class Writer extends AbstractUser {
 
+    @Column(length = 2000)
     private String bio;
+    
+    @Column(length = 1000)
+    private String profileImageUrl;
+    
+    @Column(length = 1000)
+    private String websiteUrl;
+    
+    @Column(length = 500)
+    private String location;
+    
+    @Column(length = 500)
+    private String professionalTitle;
 
-    @OneToMany(mappedBy = "author", cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, orphanRemoval = true)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts;
+
+    @Override
+    public String getUserType() {
+        return "WRITER";
+    }
+
+    @Override
+    public boolean canUpdateBio() {
+        return true;
+    }
 }

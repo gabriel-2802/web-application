@@ -1,6 +1,7 @@
 package blog.application.demo.services;
 
-import blog.application.demo.dto.CollectionDto;
+import blog.application.demo.dto.request.CreateCollectionRequest;
+import blog.application.demo.dto.response.CollectionResponse;
 import blog.application.demo.entities.Post;
 import blog.application.demo.entities.PostCollection;
 import blog.application.demo.entities.users.Writer;
@@ -38,13 +39,13 @@ public class CollectionService extends AbstractService{
      * @return ResponseEntity with the created CollectionDto
      * @throws IllegalArgumentException if input is invalid
      */
-    public ResponseEntity<CollectionDto> create(CollectionDto collectionDto) {
+    public ResponseEntity<CollectionResponse> create(CreateCollectionRequest collectionDto) {
         Writer owner = getCurrentWriter();
 
         // create new collection entity
         PostCollection collection = collectionMapper.toEntity(collectionDto, owner);
         PostCollection savedCollection = collectionRepository.save(collection);
-        CollectionDto responseDto = collectionMapper.toDTO(savedCollection);
+        CollectionResponse responseDto = collectionMapper.toResponse(savedCollection);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
@@ -54,10 +55,10 @@ public class CollectionService extends AbstractService{
      * @return ResponseEntity with list of all CollectionDtos
      */
     @Transactional(readOnly = true)
-    public ResponseEntity<List<CollectionDto>> getAll() {
+    public ResponseEntity<List<CollectionResponse>> getAll() {
         List<PostCollection> collections = collectionRepository.findAll();
-        List<CollectionDto> collectionDtos = collections.stream()
-                .map(collectionMapper::toDTO)
+        List<CollectionResponse> collectionDtos = collections.stream()
+                .map(collectionMapper::toResponse)
                 .toList();
 
         return ResponseEntity.ok(collectionDtos);
@@ -70,11 +71,11 @@ public class CollectionService extends AbstractService{
      * @throws ResourceNotFoundException if collection not found
      */
     @Transactional(readOnly = true)
-    public ResponseEntity<CollectionDto> getCollection(int id) {
+    public ResponseEntity<CollectionResponse> getCollection(int id) {
         PostCollection collection = collectionRepository.findById((long) id)
                 .orElseThrow(() -> new ResourceNotFoundException("Collection not found with id: " + id));
 
-        CollectionDto collectionDto = collectionMapper.toDTO(collection);
+        CollectionResponse collectionDto = collectionMapper.toResponse(collection);
         return ResponseEntity.ok(collectionDto);
     }
 
@@ -86,7 +87,7 @@ public class CollectionService extends AbstractService{
      * @throws ResourceNotFoundException if collection not found
      * @throws UnauthorizedException if user is not the collection owner
      */
-    public ResponseEntity<CollectionDto> updateCollection(int id, CollectionDto collectionDto) {
+    public ResponseEntity<CollectionResponse> updateCollection(int id, CreateCollectionRequest collectionDto) {
         PostCollection collection = collectionRepository.findById((long) id)
                 .orElseThrow(() -> new ResourceNotFoundException("Collection not found with id: " + id));
 
@@ -100,7 +101,7 @@ public class CollectionService extends AbstractService{
         collection.setName(collectionDto.name());
 
         PostCollection updatedCollection = collectionRepository.save(collection);
-        CollectionDto responseDto = collectionMapper.toDTO(updatedCollection);
+        CollectionResponse responseDto = collectionMapper.toResponse(updatedCollection);
 
         return ResponseEntity.ok(responseDto);
     }
@@ -112,7 +113,7 @@ public class CollectionService extends AbstractService{
      * @throws ResourceNotFoundException if collection not found
      * @throws UnauthorizedException if user is not the collection owner
      */
-    public ResponseEntity<CollectionDto> pinCollection(int id) {
+    public ResponseEntity<CollectionResponse> pinCollection(int id) {
         PostCollection collection = collectionRepository.findById((long) id)
                 .orElseThrow(() -> new ResourceNotFoundException("Collection not found with id: " + id));
 
@@ -126,7 +127,7 @@ public class CollectionService extends AbstractService{
         // toggle pin status
         collection.setPinned(!collection.isPinned());
         PostCollection updatedCollection = collectionRepository.save(collection);
-        CollectionDto responseDto = collectionMapper.toDTO(updatedCollection);
+        CollectionResponse responseDto = collectionMapper.toResponse(updatedCollection);
 
         return ResponseEntity.ok(responseDto);
     }
@@ -141,7 +142,7 @@ public class CollectionService extends AbstractService{
      * @throws IllegalArgumentException if post list is empty
      */
     @Transactional
-    public ResponseEntity<CollectionDto> addPosts(List<Integer> postIds, int id) {
+    public ResponseEntity<CollectionResponse> addPosts(List<Integer> postIds, int id) {
         if (postIds == null || postIds.isEmpty()) {
             throw new IllegalArgumentException("Post IDs list cannot be empty");
         }
@@ -169,7 +170,7 @@ public class CollectionService extends AbstractService{
         PostCollection updatedCollection = collectionRepository.findByIdWithPosts((long) id)
                 .orElseThrow(() -> new ResourceNotFoundException("Collection not found"));
 
-        return ResponseEntity.ok(collectionMapper.toDTO(updatedCollection));
+        return ResponseEntity.ok(collectionMapper.toResponse(updatedCollection));
     }
 
     /**
@@ -181,7 +182,7 @@ public class CollectionService extends AbstractService{
      * @throws UnauthorizedException if user is not the collection owner
      * @throws IllegalArgumentException if post list is empty
      */
-    public ResponseEntity<CollectionDto> removePosts(List<Integer> postIds, int id) {
+    public ResponseEntity<CollectionResponse> removePosts(List<Integer> postIds, int id) {
         if (postIds == null || postIds.isEmpty()) {
             throw new IllegalArgumentException("Post IDs list cannot be empty");
         }
@@ -210,7 +211,7 @@ public class CollectionService extends AbstractService{
         PostCollection updatedCollection = collectionRepository.findByIdWithPosts((long) id)
                 .orElseThrow(() -> new ResourceNotFoundException("Collection not found"));
 
-        return ResponseEntity.ok(collectionMapper.toDTO(updatedCollection));
+        return ResponseEntity.ok(collectionMapper.toResponse(updatedCollection));
     }
 
     /**
@@ -220,7 +221,7 @@ public class CollectionService extends AbstractService{
      * @throws ResourceNotFoundException if collection not found
      * @throws UnauthorizedException if user is not the collection owner
      */
-    public ResponseEntity<CollectionDto> delete(int id) {
+    public ResponseEntity<CollectionResponse> delete(int id) {
         PostCollection collection = collectionRepository.findById((long) id)
                 .orElseThrow(() -> new ResourceNotFoundException("Collection not found with id: " + id));
 
@@ -231,7 +232,7 @@ public class CollectionService extends AbstractService{
             throw new UnauthorizedException("You can only delete your own collections");
         }
 
-        CollectionDto responseDto = collectionMapper.toDTO(collection);
+        CollectionResponse responseDto = collectionMapper.toResponse(collection);
 
         // nullify all posts in collection before deletion
         collectionRepository.nullifyPostCollections(collection.getId());

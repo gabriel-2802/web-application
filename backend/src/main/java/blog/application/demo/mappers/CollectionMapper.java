@@ -1,6 +1,7 @@
 package blog.application.demo.mappers;
 
-import blog.application.demo.dto.CollectionDto;
+import blog.application.demo.dto.request.CreateCollectionRequest;
+import blog.application.demo.dto.response.CollectionResponse;
 import blog.application.demo.entities.PostCollection;
 import blog.application.demo.entities.users.Writer;
 import org.mapstruct.Mapper;
@@ -14,15 +15,16 @@ public interface CollectionMapper {
     @Mapping(target = "owner", source = "owner.username")
     @Mapping(target = "ownerId", expression = "java(collection.getOwner().getId().toString())")
     @Mapping(target = "posts", source = "posts")
-    CollectionDto toDTO(PostCollection collection);
+    @Mapping(target = "createdAt", source = "createdAt")
+    CollectionResponse toResponse(PostCollection collection);
 
-    default PostCollection toEntity(CollectionDto collectionDTO, Writer owner) {
+    default PostCollection toEntity(CreateCollectionRequest createCollectionRequest, Writer owner) {
         PostCollection collection = new PostCollection();
         collection.setId(null);
-        collection.setName(collectionDTO.name());
-        collection.setDescription(collectionDTO.description());
+        collection.setName(createCollectionRequest.name());
+        collection.setDescription(createCollectionRequest.description());
         collection.setOwner(owner);
-        collection.setPinned(collectionDTO.pinned());
+        collection.setPinned(createCollectionRequest.pinned() != null ? createCollectionRequest.pinned() : false);
         collection.setPosts(new ArrayList<>());
         return collection;
     }

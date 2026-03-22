@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Utility class for application-wide constants and configuration values, including JWT settings and role definitions
+ */
 @Component
 public class Constants {
     
@@ -16,12 +19,11 @@ public class Constants {
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    public static long ADMIN_REGISTER_CODE = 282828282;
+    @Value("${app.admin.register.code:282828282}")
+    public long ADMIN_REGISTER_CODE;
     
     public static final String ADMIN = "ADMIN";
     public static final String USER = "USER";
-    public static final String ADMIN_ENDPOINT = "/api/admin/**";
-    public static final String USER_ENDPOINT = "/api/user/**";
     
     private SecretKey secretKey;
     

@@ -1,6 +1,7 @@
 package blog.application.demo.services;
 
-import blog.application.demo.dto.CommentDto;
+import blog.application.demo.dto.request.CreateCommentRequest;
+import blog.application.demo.dto.response.CommentResponse;
 import blog.application.demo.entities.Comment;
 import blog.application.demo.entities.Post;
 import blog.application.demo.entities.users.AbstractUser;
@@ -10,11 +11,8 @@ import blog.application.demo.mappers.CommentMapper;
 import blog.application.demo.repositories.CommentRepository;
 import blog.application.demo.repositories.PostRepository;
 import blog.application.demo.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,12 +41,12 @@ public class CommentService extends AbstractService {
      * @throws ResourceNotFoundException if post not found
      * @throws IllegalArgumentException if content is empty
      */
-    public ResponseEntity<CommentDto> createComment(CommentDto commentDto) {
+    public ResponseEntity<CommentResponse> createComment(CreateCommentRequest commentDto) {
         Post post = postRepository.findById(commentDto.postId())
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + commentDto.postId()));
 
         Comment parentComment = null;
-        if (commentDto.isChildComment()) {
+        if (commentDto.parentCommentId() != null) {
             Optional<Comment> parentOpt = commentRepository.findById(commentDto.parentCommentId());
             if (parentOpt.isEmpty()) {
                 throw new ResourceNotFoundException("Parent comment not found with id: " + commentDto.parentCommentId());
@@ -63,13 +61,10 @@ public class CommentService extends AbstractService {
 
         AbstractUser author = getCurrentUser();
 
-        Comment comment = commentMapper.toEntity(commentDto);
-        comment.setAuthor(author);
-        comment.setPost(post);
-        comment.setParent(parentComment);
+        Comment comment = commentMapper.toEntity(commentDto, author, post, parentComment);
 
         Comment savedComment = commentRepository.save(comment);
-        CommentDto responseDto = commentMapper.toDTO(savedComment);
+        CommentResponse responseDto = commentMapper.toResponse(savedComment);
 
         post.getComments().add(savedComment);
         postRepository.save(post);
@@ -84,14 +79,14 @@ public class CommentService extends AbstractService {
      * @throws ResourceNotFoundException if post not found
      */
     @Transactional(readOnly = true)
-    public ResponseEntity<List<CommentDto>> getCommentsByPost(Long postId) {
+    public ResponseEntity<List<CommentResponse>> getCommentsByPost(Long postId) {
         // verify post exists
         postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
 
         List<Comment> comments = commentRepository.findByPostId(postId);
-        List<CommentDto> commentDtos = comments.stream()
-                .map(commentMapper::toDTO)
+        List<CommentResponse> commentDtos = comments.stream()
+                .map(commentMapper::toResponse)
                 .sorted((c1, c2) -> c1.createdAt().compareTo(c2.createdAt()))
                 .toList();
 
@@ -105,14 +100,14 @@ public class CommentService extends AbstractService {
      * @throws ResourceNotFoundException if post not found
      */
     @Transactional(readOnly = true)
-    public ResponseEntity<List<CommentDto>> getTopLevelComments(Long postId) {
+    public ResponseEntity<List<CommentResponse>> getTopLevelComments(Long postId) {
         // Verify post exists
         postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
 
         List<Comment> comments = commentRepository.findTopLevelCommentsByPostId(postId);
-        List<CommentDto> commentDtos = comments.stream()
-                .map(commentMapper::toDTO)
+        List<CommentResponse> commentDtos = comments.stream()
+                .map(commentMapper::toResponse)
                 .sorted((c1, c2) -> c1.createdAt().compareTo(c2.createdAt()))
                 .toList();
 
@@ -126,14 +121,14 @@ public class CommentService extends AbstractService {
      * @throws ResourceNotFoundException if comment not found
      */
     @Transactional(readOnly = true)
-    public ResponseEntity<List<CommentDto>> getReplies(Long commentId) {
+    public ResponseEntity<List<CommentResponse>> getReplies(Long commentId) {
         // verify comment exists
         commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found with id: " + commentId));
 
         List<Comment> replies = commentRepository.findRepliesByParentCommentId(commentId);
-        List<CommentDto> replyDtos = replies.stream()
-                .map(commentMapper::toDTO)
+        List<CommentResponse> replyDtos = replies.stream()
+                .map(commentMapper::toResponse)
                 .sorted((c1, c2) -> c1.createdAt().compareTo(c2.createdAt()))
                 .toList();
 
@@ -149,7 +144,7 @@ public class CommentService extends AbstractService {
      * @throws UnauthorizedException if user is not the comment author
      * @throws IllegalArgumentException if content is empty
      */
-    public ResponseEntity<CommentDto> updateComment(Long commentId, CommentDto commentDto) {
+    public ResponseEntity<CommentResponse> updateComment(Long commentId, CreateCommentRequest commentDto) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found with id: " + commentId));
 
@@ -162,28 +157,33 @@ public class CommentService extends AbstractService {
         comment.setContent(commentDto.content());
         comment.setUpdatedAt(LocalDateTime.now());
         Comment updatedComment = commentRepository.save(comment);
-        CommentDto responseDto = commentMapper.toDTO(updatedComment);
+        CommentResponse responseDto = commentMapper.toResponse(updatedComment);
 
         return ResponseEntity.ok(responseDto);
     }
 
-    public ResponseEntity<CommentDto> adminDeleteComment(Long commentId) {
+    public ResponseEntity<CommentResponse> adminDeleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found with id: " + commentId));
 
         commentRepository.delete(comment);
-        CommentDto responseDto = commentMapper.toDTO(comment);
+        CommentResponse responseDto = commentMapper.toResponse(comment);
         return ResponseEntity.ok(responseDto);
     }
 
     /**
      * Deletes a comment (only the author can delete)
+     * 
+     * When a comment is deleted, its child comments are promoted:
+     * - If the deleted comment is top-level (parent = NULL), children become top-level
+     * - If the deleted comment is a reply, children become replies to the deleted comment's parent
+     * 
      * @param commentId the comment ID
-     * @return ResponseEntity with the deleted CommentDto
+     * @return ResponseEntity with the deleted comment response
      * @throws ResourceNotFoundException if comment not found
      * @throws UnauthorizedException if user is not the comment author
      */
-    public ResponseEntity<CommentDto> deleteComment(Long commentId) {
+    public ResponseEntity<CommentResponse> deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found with id: " + commentId));
 
@@ -194,7 +194,23 @@ public class CommentService extends AbstractService {
             throw new UnauthorizedException("You can only delete your own comments");
         }
 
-        CommentDto responseDto = commentMapper.toDTO(comment);
+        // get the parent of the comment being deleted (could be null if top-level)
+        Comment parentOfDeleted = comment.getParent();
+
+        // find all direct replies to this comment
+        List<Comment> childComments = commentRepository.findRepliesByParentCommentId(commentId);
+
+        // promote all child comments to parent's level
+        for (Comment child : childComments) {
+            child.setParent(parentOfDeleted);
+            child.setUpdatedAt(LocalDateTime.now());
+            commentRepository.save(child);
+        }
+
+        // create response before deletion
+        CommentResponse responseDto = commentMapper.toResponse(comment);
+
+        // delete the comment
         commentRepository.deleteById(commentId);
 
         return ResponseEntity.ok(responseDto);

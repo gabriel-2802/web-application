@@ -1,7 +1,7 @@
 package blog.application.demo.controllers;
-import blog.application.demo.dto.AuthDto;
-import blog.application.demo.dto.LoginDto;
-import blog.application.demo.dto.RegisterDto;
+import blog.application.demo.dto.request.LoginRequest;
+import blog.application.demo.dto.request.RegisterRequest;
+import blog.application.demo.dto.response.AuthResponse;
 import blog.application.demo.exceptions.ExistingEmailException;
 import blog.application.demo.exceptions.ExistingUsernameException;
 import blog.application.demo.services.AuthService;
@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.AuthenticationException;
+import jakarta.validation.Valid;
 
 /**
  * Rest controller that handles user authentication endpoints.
@@ -21,14 +22,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterDto registerDTO) {
-        authService.register(registerDTO);
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest registerRequest) {
+        authService.register(registerRequest);
         return ResponseEntity.ok("User registered successfully");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthDto> login(@RequestBody LoginDto loginDTO) {
-        AuthDto response = authService.login(loginDTO);
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+        AuthResponse response = authService.login(loginRequest);
         return ResponseEntity.ok(response);
     }
 

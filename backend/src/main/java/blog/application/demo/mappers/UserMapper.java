@@ -1,12 +1,11 @@
 package blog.application.demo.mappers;
 
-import blog.application.demo.dto.RegisterDto;
-import blog.application.demo.dto.UserDto;
+import blog.application.demo.dto.request.RegisterRequest;
+import blog.application.demo.dto.response.UserResponse;
 import blog.application.demo.entities.Role;
 import blog.application.demo.entities.users.AbstractUser;
 import blog.application.demo.entities.users.Viewer;
 import blog.application.demo.entities.users.Writer;
-import blog.application.demo.utils.Constants;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -20,29 +19,29 @@ import java.util.stream.Collectors;
 )
 public interface UserMapper {
     
-    default AbstractUser toEntity(RegisterDto userDTO) {
-        if (userDTO == null) {
+    default AbstractUser toEntity(RegisterRequest registerRequest, Long adminCode) {
+        if (registerRequest == null) {
             return null;
         }
         
         AbstractUser user;
 
-        if (userDTO.adminRegisterCode() != null &&
-            userDTO.adminRegisterCode().equals(Constants.ADMIN_REGISTER_CODE)) {
+        if (registerRequest.adminRegisterCode() != null &&
+            registerRequest.adminRegisterCode().equals(adminCode)) {
             user = new Writer();
         } else {
             user = new Viewer();
         }
 
-        user.setUsername(userDTO.username());
-        user.setPassword(userDTO.password());
-        user.setEmail(userDTO.email());
+        user.setUsername(registerRequest.username());
+        user.setPassword(registerRequest.password());
+        user.setEmail(registerRequest.email());
         
         return user;
     }
 
     @Mapping(target = "roles", source = "authorities")
-    UserDto toDTO(AbstractUser user);
+    UserResponse toResponse(AbstractUser user);
 
     default Set<String> map(Collection<Role> roles) {
         if (roles == null) {

@@ -1,6 +1,7 @@
 package blog.application.demo.services;
 
-import blog.application.demo.dto.PostDto;
+import blog.application.demo.dto.request.CreatePostRequest;
+import blog.application.demo.dto.response.PostResponse;
 import blog.application.demo.entities.Post;
 import blog.application.demo.entities.PostCollection;
 import blog.application.demo.entities.users.Writer;
@@ -41,7 +42,7 @@ public class PostService extends AbstractService{
      * @return ResponseEntity with the created PostDto
      * @throws IllegalArgumentException if input is invalid
      */
-    public ResponseEntity<PostDto> createPost(PostDto postDto) {
+    public ResponseEntity<PostResponse> createPost(CreatePostRequest postDto) {
         Writer author = getCurrentWriter();
 
         PostCollection collection = null;
@@ -59,7 +60,7 @@ public class PostService extends AbstractService{
 
         // Save only the Post - Hibernate handles the relationships
         Post savedPost = postRepository.save(post);
-        PostDto responseDto = postMapper.toDTO(savedPost);
+        PostResponse responseDto = postMapper.toResponse(savedPost);
 
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
@@ -70,10 +71,10 @@ public class PostService extends AbstractService{
      * @return ResponseEntity with list of all PostDtos
      */
     @Transactional(readOnly = true)
-    public ResponseEntity<List<PostDto>> getAllPosts() {
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
         List<Post> posts = postRepository.findAll();
-        List<PostDto> postDtos = posts.stream()
-                .map(postMapper::toDTO)
+        List<PostResponse> postDtos = posts.stream()
+                .map(postMapper::toResponse)
                 .toList();
 
         return ResponseEntity.ok(postDtos);
@@ -86,11 +87,11 @@ public class PostService extends AbstractService{
      * @throws ResourceNotFoundException if post not found
      */
     @Transactional(readOnly = true)
-    public ResponseEntity<PostDto> findPost(int id) {
+    public ResponseEntity<PostResponse> findPost(int id) {
         Post post = postRepository.findById((long) id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
 
-        PostDto postDto = postMapper.toDTO(post);
+        PostResponse postDto = postMapper.toResponse(post);
         return ResponseEntity.ok(postDto);
     }
 
@@ -103,7 +104,7 @@ public class PostService extends AbstractService{
      * @throws UnauthorizedException if user is not the post author
      * @throws IllegalArgumentException if input is invalid
      */
-    public ResponseEntity<PostDto> updatePost(int id, PostDto postDto) {
+    public ResponseEntity<PostResponse> updatePost(int id, CreatePostRequest postDto) {
         Post post = postRepository.findById((long) id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
 
@@ -119,7 +120,7 @@ public class PostService extends AbstractService{
         }
 
         Post updatedPost = postRepository.save(post);
-        PostDto responseDto = postMapper.toDTO(updatedPost);
+        PostResponse responseDto = postMapper.toResponse(updatedPost);
 
         return ResponseEntity.ok(responseDto);
     }
@@ -131,7 +132,7 @@ public class PostService extends AbstractService{
      * @throws ResourceNotFoundException if post not found
      * @throws UnauthorizedException if user is not the post author
      */
-    public ResponseEntity<PostDto> deletePost(int id) {
+    public ResponseEntity<PostResponse> deletePost(int id) {
         Post post = postRepository.findById((long) id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
 
@@ -142,7 +143,7 @@ public class PostService extends AbstractService{
             throw new UnauthorizedException("You can only delete your own posts");
         }
 
-        PostDto responseDto = postMapper.toDTO(post);
+        PostResponse responseDto = postMapper.toResponse(post);
         postRepository.deleteById((long) id);
 
         return ResponseEntity.ok(responseDto);
@@ -155,14 +156,14 @@ public class PostService extends AbstractService{
      * @throws IllegalArgumentException if keyword is empty or null
      */
     @Transactional(readOnly = true)
-    public ResponseEntity<List<PostDto>> searchPosts(String keyword) {
+    public ResponseEntity<List<PostResponse>> searchPosts(String keyword) {
         if (keyword == null || keyword.isBlank()) {
             throw new IllegalArgumentException("Search keyword cannot be empty");
         }
 
         List<Post> posts = postRepository.searchByKeyword(keyword);
-        List<PostDto> postDtos = posts.stream()
-                .map(postMapper::toDTO)
+        List<PostResponse> postDtos = posts.stream()
+                .map(postMapper::toResponse)
                 .toList();
 
         return ResponseEntity.ok(postDtos);

@@ -32,8 +32,7 @@ public class PostCollection {
     @JoinColumn(name = "owner_id", nullable = false)
     private Writer owner;
 
-    // posts must survive collection deletion
-    @OneToMany(mappedBy = "collection")
+    @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts;
 
     @PrePersist

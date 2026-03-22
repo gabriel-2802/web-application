@@ -24,7 +24,6 @@ public abstract class AbstractUser implements UserDetails {
     @Column(unique = true, nullable = false)
     private String username;
 
-
     @Column(nullable = false)
     private String password;
 
@@ -57,4 +56,52 @@ public abstract class AbstractUser implements UserDetails {
     public void setRoles(Set<Role> role) {
         authorities = role;
     }
+
+    /**
+     * Get user type identifier
+     * @return "WRITER" for writers, "VIEWER" for viewers
+     */
+    public abstract String getUserType();
+
+    /**
+     * Get user's bio
+     * @return bio text or null if not applicable
+     */
+    public abstract String getBio();
+
+    /**
+     * Set user's bio
+     * @param bio the bio text
+     */
+    public abstract void setBio(String bio);
+
+    /**
+     * Check if user can update bio (writers only)
+     * @return true if user can update bio, false otherwise
+     */
+    public abstract boolean canUpdateBio();
+
+    /**
+     * Get profile image URL
+     * @return profile image URL or null
+     */
+    public abstract String getProfileImageUrl();
+
+    /**
+     * Get website URL (writers only)
+     * @return website URL or null
+     */
+    public abstract String getWebsiteUrl();
+
+    /**
+     * Get location (writers only)
+     * @return location or null
+     */
+    public abstract String getLocation();
+
+    /**
+     * Get professional title (writers only)
+     * @return professional title or null
+     */
+    public abstract String getProfessionalTitle();
 }

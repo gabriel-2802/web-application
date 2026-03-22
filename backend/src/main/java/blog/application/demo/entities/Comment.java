@@ -3,6 +3,8 @@ package blog.application.demo.entities;
 import blog.application.demo.entities.users.AbstractUser;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,12 +35,15 @@ public class Comment {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    // null = top-level comment, non-null = reply to another comment
+    /**
+     * null = top level comment, non-null = reply to another comment
+     * When parent is deleted, child comments move to parent's parent level
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id", nullable = true)
     private Comment parent;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<Comment> replies;
 
     @PrePersist

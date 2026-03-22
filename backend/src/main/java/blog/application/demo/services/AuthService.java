@@ -1,13 +1,11 @@
 package blog.application.demo.services;
 
-import blog.application.demo.dto.AuthDto;
-import blog.application.demo.dto.LoginDto;
-import blog.application.demo.dto.RegisterDto;
+import blog.application.demo.dto.request.LoginRequest;
+import blog.application.demo.dto.request.RegisterRequest;
+import blog.application.demo.dto.response.AuthResponse;
 import blog.application.demo.entities.Role;
 import blog.application.demo.entities.RoleName;
 import blog.application.demo.entities.users.AbstractUser;
-import blog.application.demo.entities.users.Viewer;
-import blog.application.demo.entities.users.Writer;
 import blog.application.demo.exceptions.ExistingEmailException;
 import blog.application.demo.exceptions.ExistingUsernameException;
 import blog.application.demo.exceptions.ResourceNotFoundException;
@@ -40,27 +38,25 @@ public class AuthService {
     private final Constants constants;
 
     @Transactional
-    public void register(RegisterDto registerDTO) throws ExistingUsernameException, ExistingEmailException, ResourceNotFoundException {
+    public void register(RegisterRequest registerRequest) throws ExistingUsernameException, ExistingEmailException, ResourceNotFoundException {
 
-        if (userRepository.findByUsername(registerDTO.username()).isPresent()) {
-            throw new ExistingUsernameException("Username '" + registerDTO.username() + "' already exists");
+        if (userRepository.findByUsername(registerRequest.username()).isPresent()) {
+            throw new ExistingUsernameException("Username '" + registerRequest.username() + "' already exists");
         }
 
-        if (userRepository.findByEmail(registerDTO.email()).isPresent()) {
-            throw new ExistingEmailException("Email '" + registerDTO.email() + "' already exists");
+        if (userRepository.findByEmail(registerRequest.email()).isPresent()) {
+            throw new ExistingEmailException("Email '" + registerRequest.email() + "' already exists");
         }
 
-        AbstractUser user = userMapper.toEntity(registerDTO);
+        AbstractUser user = userMapper.toEntity(registerRequest, constants.ADMIN_REGISTER_CODE);
 
-        // Encode password before saving
-        user.setPassword(passwordEncoder.encode(registerDTO.password()));
+        user.setPassword(passwordEncoder.encode(registerRequest.password()));
 
-        List<RoleName> roleNames = (registerDTO.adminRegisterCode() != null &&
-                registerDTO.adminRegisterCode().equals(Constants.ADMIN_REGISTER_CODE))
+        List<RoleName> roleNames = (registerRequest.adminRegisterCode() != null &&
+                registerRequest.adminRegisterCode().equals(constants.ADMIN_REGISTER_CODE))
                 ? List.of(RoleName.ROLE_ADMIN, RoleName.ROLE_VIEWER, RoleName.ROLE_WRITER)
                 : List.of(RoleName.ROLE_VIEWER);
 
-        // load role from database
         Set<Role> roles = roleNames.stream().map(roleName -> {
                     try {
                         return roleRepository.findByRoleName(roleName)
@@ -71,24 +67,23 @@ public class AuthService {
                 })
                 .collect(java.util.stream.Collectors.toSet());
 
-        // Set roles on the user before saving
         user.setRoles(roles);
 
         userRepository.save(user);
     }
 
     @Transactional
-    public AuthDto login(LoginDto loginDTO) {
+    public AuthResponse login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginDTO.username(),
-                        loginDTO.password()
+                        loginRequest.username(),
+                        loginRequest.password()
                 )
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtGenerator.generateToken(authentication);
-        return new AuthDto(jwt);
+        return new AuthResponse(jwt);
     }
 
 }

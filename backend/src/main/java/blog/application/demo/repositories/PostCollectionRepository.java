@@ -18,5 +18,4 @@ public interface PostCollectionRepository extends JpaRepository<PostCollection, 
 
     @Query("SELECT c FROM PostCollection c LEFT JOIN FETCH c.posts WHERE c.id = :id")
     Optional<PostCollection> findByIdWithPosts(@Param("id") Long id);
-
 }
