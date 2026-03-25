@@ -80,3 +80,29 @@
   .postLink:hover {
     color: rgb(148, 16, 148);
   }
+
+  .postMeta {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .postCollection {
+    font-family: "Varela Round", Arial, Helvetica, sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: #d4a5ff;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    background: rgba(212, 165, 255, 0.1);
+  }
+
+  .postCollection:hover {
+    background: rgba(212, 165, 255, 0.2);
+    color: #e0c3fc;
+    text-decoration: underline;
+  }

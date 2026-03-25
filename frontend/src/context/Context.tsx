@@ -22,6 +22,7 @@ export interface Post {
   authorId?: number;
   authorUsername?: string;
   collectionId?: number;
+  collectionName?: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   comments?: any[];

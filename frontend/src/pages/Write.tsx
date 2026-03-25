@@ -6,7 +6,13 @@ import Image from '../assets/pexels-sheep-1846422.jpg';
 import axios from 'axios';
 import { LoginContext, Post, isWriter } from '../context/Context';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import { POST_ENDPOINTS } from '../constants/api';
+import { POST_ENDPOINTS, COLLECTION_ENDPOINTS } from '../constants/api';
+
+interface Collection {
+  id: number;
+  name: string;
+  description: string;
+}
 
 const Write: FC = () => {
   const { jwt, user } = useContext(LoginContext);
@@ -18,6 +24,8 @@ const Write: FC = () => {
 
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
+  const [collectionId, setCollectionId] = useState<number | ''>('');
+  const [collections, setCollections] = useState<Collection[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,6 +55,19 @@ const Write: FC = () => {
     console.log('User authenticated and is a writer');
   }, [jwt, user, nav]);
 
+  // Fetch collections
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const res = await axios.get(COLLECTION_ENDPOINTS.ALL);
+        setCollections(res.data);
+      } catch (error) {
+        console.error('Failed to fetch collections:', error);
+      }
+    };
+    fetchCollections();
+  }, []);
+
   // Fetch post data when in edit mode
   useEffect(() => {
     if (isEditMode && postId) {
@@ -60,6 +81,7 @@ const Write: FC = () => {
           console.log('Post fetched successfully:', post);
           setTitle(post.title || '');
           setText(post.content || '');
+          setCollectionId(post.collectionId || '');
           setIsLoading(false);
         } catch (err: any) {
           console.error('Failed to fetch post:', err);
@@ -79,6 +101,7 @@ const Write: FC = () => {
       console.log('Using state post:', statePost);
       setTitle(statePost.title || '');
       setText(statePost.content || '');
+      setCollectionId(statePost.collectionId || '');
     } else {
       console.log('CREATE MODE: New post');
     }
@@ -95,10 +118,14 @@ const Write: FC = () => {
     setIsSubmitting(true);
     setError('');
 
-    const newPost = {
+    const newPost: any = {
       title: title,
       content: text,
     };
+
+    if (collectionId) {
+      newPost.collectionId = collectionId;
+    }
 
     console.log('SUBMIT: Preparing to save post', {
       isEditMode,
@@ -222,6 +249,20 @@ const Write: FC = () => {
             onChange={(e) => setText(e.target.value)}
             value={text}
           />
+        </div>
+        <div className="writeFormGroup">
+          <select
+            className="writeInput"
+            value={collectionId}
+            onChange={(e) => setCollectionId(e.target.value ? parseInt(e.target.value) : '')}
+          >
+            <option value="">-- Select a Collection (Optional) --</option>
+            {collections.map((collection) => (
+              <option key={collection.id} value={collection.id}>
+                {collection.name}
+              </option>
+            ))}
+          </select>
         </div>
         {error && (
           <div style={{ 

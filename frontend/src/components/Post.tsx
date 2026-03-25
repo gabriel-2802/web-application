@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import '../styles/post.css';
 import Image from '../assets/pexels-sheep-1846422.jpg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Post as PostType } from '../context/Context';
 
 interface PostProps {
@@ -22,6 +22,15 @@ const formatDate = (dateInput?: string | Date) => {
 };
 
 const Post: FC<PostProps> = ({ post }) => {
+  const navigate = useNavigate();
+
+  const handleCollectionClick = (e: React.MouseEvent, collectionId?: number) => {
+    e.preventDefault();
+    if (collectionId) {
+      navigate(`/?collection=${collectionId}`);
+    }
+  };
+
   return (
     <div className="post">
       <img src={Image} alt="" className="postImg" />
@@ -29,17 +38,27 @@ const Post: FC<PostProps> = ({ post }) => {
         <Link to={`/post/${post.id}`} className="postLink">
           <span className="postTitle">{post.title}</span>
         </Link>
-        <span className="postDesc">{post.content?.substring(0, 15)}...</span>
+        <span className="postDesc">{post.content?.substring(0, 100)}...</span>
         <hr />
-        <span className="postDate">
-          Published: {formatDate(post.createdAt)}
-          {post.updatedAt && (
-            <>
-              <br />
-              Updated: {formatDate(post.updatedAt)}
-            </>
+        <div className="postMeta">
+          <span className="postDate">
+            Published: {formatDate(post.createdAt)}
+            {post.updatedAt && (
+              <>
+                <br />
+                Updated: {formatDate(post.updatedAt)}
+              </>
+            )}
+          </span>
+          {post.collectionId && (
+            <span
+              className="postCollection"
+              onClick={(e) => handleCollectionClick(e, post.collectionId)}
+            >
+              Collection: {post.collectionName || `#${post.collectionId}`}
+            </span>
           )}
-        </span>
+        </div>
       </div>
     </div>
   );

@@ -54,6 +54,51 @@
     color: rgb(189, 185, 185);
     font-weight: 400;
   }
+
+  .writeInput[type="text"],
+  .writeInput[type="file"],
+  .writeInput[type="email"],
+  .writeInput[type="password"],
+  .writeInput[type="url"],
+  .writeInput[type="number"],
+  .writeInput[type="date"],
+  .writeInput[type="time"],
+  .writeInput[type="datetime-local"],
+  .writeInput[type="month"],
+  .writeInput[type="week"],
+  .writeInput[type="color"],
+  .writeInput[type="search"],
+  .writeInput[type="tel"],
+  textarea.writeInput,
+  select.writeInput {
+    font-size: 30px;
+    border: none;
+    padding: 20px;
+    width: 70vw;
+    background-color: inherit;
+    color: white;
+  }
+
+  select.writeInput {
+    font-size: 16px;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(212, 165, 255, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+  }
+
+  select.writeInput:focus {
+    outline: none;
+    border: 1px solid rgba(212, 165, 255, 0.6);
+  }
+
+  select.writeInput option {
+    background-color: #1a1a1a;
+    color: white;
+  }
   
   .writeInput:focus { 
     outline-style: none;

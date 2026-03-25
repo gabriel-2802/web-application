@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { isWriter, LoginContext, Post } from '../context/Context';
 import { POST_ENDPOINTS } from '../constants/api';
+import CommentSection from './CommentSection';
 
 const SinglePost: FC = () => {
   const location = useLocation();
@@ -42,6 +43,12 @@ const SinglePost: FC = () => {
     nav(`/post/edit/${id}`, { state: post });
   };
 
+  const handleCollectionClick = () => {
+    if (post?.collectionId) {
+      nav(`/?collection=${post.collectionId}`);
+    }
+  };
+
   return (
     <div className="singlePost">
       <div className="singlePostWrapper">
@@ -62,12 +69,22 @@ const SinglePost: FC = () => {
         </h1>
         <div className="singlePostInfo">
           <span className="singlePostAuthor">Author: {post?.author}</span>
+          {post?.collectionId && (
+            <span
+              className="singlePostCollection"
+              onClick={handleCollectionClick}
+              style={{ cursor: 'pointer', color: '#d4a5ff', marginLeft: '15px' }}
+            >
+              More at {post.collectionName || `#${post.collectionId}`}
+            </span>
+          )}
           <p className="singlePostDesc">{post?.content}</p>
           <span className="singlePostDate">
             Created at: {new Date(post?.createdAt || '').toDateString()}
           </span>
         </div>
       </div>
+      {post?.id && <CommentSection postId={post.id} />}
     </div>
   );
 };
