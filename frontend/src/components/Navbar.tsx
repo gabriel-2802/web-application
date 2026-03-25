@@ -37,9 +37,17 @@ const Navbar: FC = () => {
       <div className="topCenter">
         <ul className="topList">
           {isWriter(user) && (
-            <Link to="/write" className="homeLink">
-              <li className="topListItem">Write</li>
-            </Link>
+            <>
+              <Link to="/write" className="homeLink">
+                <li className="topListItem">Write</li>
+              </Link>
+              <Link to="/posts-table" className="homeLink">
+                <li className="topListItem">My Posts</li>
+              </Link>
+              <Link to="/collections-table" className="homeLink">
+                <li className="topListItem">My Collections</li>
+              </Link>
+            </>
           )}
           <Link to="/" className="homeLink">
             <li className="topListItem">Home</li>

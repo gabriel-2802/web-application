@@ -9,6 +9,8 @@ import Register from './pages/Register';
 import VerifyEmail from './pages/VerifyEmail';
 import NotFound from './pages/NotFound';
 import Single from './pages/Single';
+import PostsTable from './pages/PostsTable';
+import CollectionsTable from './pages/CollectionsTable';
 import { useContext } from 'react';
 import { LoginContext } from './context/Context';
 import { FC } from 'react';
@@ -29,6 +31,8 @@ const App: FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/posts-table" element={<PostsTable />} />
+          <Route path="/collections-table" element={<CollectionsTable />} />
           <Route path="/*" element={<NotFound />} />
           <Route path="/post/:postId" element={<Single />} />
           <Route path="/post/edit/:postId" element={<Write />} />

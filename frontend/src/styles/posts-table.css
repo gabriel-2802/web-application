@@ -1,0 +1,222 @@
+/* Posts Table Styles */
+.posts-table-container {
+  padding: 40px 20px;
+}
+
+.posts-table-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.posts-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.posts-table-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.posts-add-button {
+  padding: 10px 20px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.posts-add-button:hover {
+  background-color: #1565c0;
+}
+
+.posts-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.posts-table thead {
+  background-color: #f5f5f5;
+}
+
+.posts-table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #e0e0e0;
+  color: #333;
+}
+
+.posts-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.posts-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.posts-table-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.posts-edit-button,
+.posts-delete-button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background-color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.posts-edit-button:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+
+.posts-delete-button:hover {
+  background-color: #ffebee;
+  border-color: #f44336;
+  color: #f44336;
+}
+
+.posts-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.posts-empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: #999;
+  font-size: 16px;
+}
+
+/* Modal Styles */
+.posts-modal {
+  border-radius: 8px;
+}
+
+.posts-modal-header {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.posts-form-group {
+  margin-bottom: 16px;
+}
+
+.posts-form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.posts-form-input,
+.posts-form-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.posts-form-input:focus,
+.posts-form-textarea:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+.posts-form-error {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.posts-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.posts-modal-cancel,
+.posts-modal-submit {
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.posts-modal-cancel {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.posts-modal-cancel:hover {
+  background-color: #eeeeee;
+}
+
+.posts-modal-submit {
+  background-color: #1976d2;
+  color: white;
+}
+
+.posts-modal-submit:hover {
+  background-color: #1565c0;
+}
+
+.posts-modal-submit:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .posts-table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .posts-table {
+    font-size: 12px;
+  }
+
+  .posts-table th,
+  .posts-table td {
+    padding: 8px;
+  }
+
+  .posts-table-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .posts-pagination {
+    gap: 8px;
+  }
+}
