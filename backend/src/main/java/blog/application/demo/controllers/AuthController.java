@@ -4,6 +4,7 @@ import blog.application.demo.dto.request.RegisterRequest;
 import blog.application.demo.dto.response.AuthResponse;
 import blog.application.demo.exceptions.ExistingEmailException;
 import blog.application.demo.exceptions.ExistingUsernameException;
+import blog.application.demo.exceptions.InvalidVerificationTokenException;
 import blog.application.demo.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,17 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Verify user's email using the verification token
+     * @param token the verification token sent to user's email
+     * @return success message
+     */
+    @GetMapping("/verify-email")
+    public ResponseEntity<String> verifyEmail(@RequestParam String token) {
+        authService.verifyEmail(token);
+        return ResponseEntity.ok("Email verified successfully. Your account is now active.");
+    }
+
     @ExceptionHandler(ExistingUsernameException.class)
     private ResponseEntity<String> handleExistingUsername(ExistingUsernameException e) {
         return ResponseEntity.status(409).body(e.getMessage());
@@ -40,6 +52,11 @@ public class AuthController {
 
     @ExceptionHandler(ExistingEmailException.class)
     private ResponseEntity<String> handleExistingEmail(ExistingEmailException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidVerificationTokenException.class)
+    private ResponseEntity<String> handleInvalidVerificationToken(InvalidVerificationTokenException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

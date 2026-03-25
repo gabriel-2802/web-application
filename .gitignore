@@ -31,3 +31,6 @@ backend/build/
 
 # VS Code
 .vscode/
+
+
+**/application.properties

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +30,15 @@ public abstract class AbstractUser implements UserDetails {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(name = "email_verified", nullable = false)
+    private Boolean emailVerified = false;
+
+    @Column(name = "verification_token")
+    private String verificationToken;
+
+    @Column(name = "verification_token_expiry")
+    private LocalDateTime verificationTokenExpiry;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
