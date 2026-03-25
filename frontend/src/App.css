@@ -1,0 +1,14 @@
+ .app {
+    background: radial-gradient(circle at 10% 20%, rgb(0, 0, 0) 0%, rgb(64, 64, 64) 90.2%);
+    color: white;
+    font-family: "Lora", serif;
+}
+
+button:hover {
+    background-color:  rgb(237, 241, 141);
+}
+
+ .link {
+    text-decoration: none;
+    color: white;
+}

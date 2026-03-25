@@ -1,0 +1,96 @@
+
+.top {
+    width: 100%;
+    height: 60px;
+    background-color: black;
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    z-index: 999;
+    font-family: "Josefin Sans", sans-serif;
+    text-decoration: none;
+    font-weight: bolder;
+  }
+  
+  .topLeft,
+  .topRight {
+    flex: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .topIcon {
+    font-size: 20px;
+    margin-right: 10px;
+    color: #444;
+    cursor: pointer;
+  }
+  
+  .topCenter {
+    flex: 6;
+  }
+  
+  .topList {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  
+  .topListItem {
+    margin-right: 40px;
+    font-size: 18px;
+    cursor: pointer;
+
+  }
+  
+  .topListItem:hover{
+      color: black;
+      background-color: rgb(148, 16, 148);
+      border-radius: 3px;
+      padding: 4px;
+  }
+  
+  .topImg {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    cursor: pointer;
+  }
+  
+  .topSearchIcon {
+    font-size: 15px;
+    color: #666;
+    cursor: pointer;
+  }
+
+  .homeLink {
+    text-decoration: none;
+    color: rgb(148, 16, 148);
+  }
+
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* your existing styles */
+  
+  
+  /* Adjust the button style */
+  .topSearchButton {
+    height: 35px;
+    padding: 0 10px; 
+    margin: 0 15px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+}

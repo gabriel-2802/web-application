@@ -1,0 +1,83 @@
+.login {
+    height: calc(100vh - 50px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+  }
+  
+  .loginTitle {
+    font-size: 50px;
+  }
+  
+  .loginForm {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .loginForm > label {
+    margin: 10px 0;
+  }
+  
+  .loginInput {
+    padding: 10px;
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+  }
+
+  .logInput {
+    padding: 10px;
+    color: black;
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+  }
+  
+  .loginInput:focus {
+    outline: none;
+  }
+
+button {
+  background-color: rgb(148, 16, 148);
+}
+  
+  .loginButton {
+    margin-top: 20px;
+    cursor: pointer;
+    color: #18191A;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bolder;
+  }
+
+  .loginButton:disabled {
+    cursor: not-allowed;
+  }
+  
+  .loginRegisterButton {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    cursor: pointer;
+    padding: 10px;
+    border: none;
+    color: #18191A;
+    border-radius: 10px;
+  }
+
+  .buttonLink {
+    color: #18191A;
+    text-decoration: none;
+    font-weight: bolder;
+  }
+
+  .logError {
+    color: red;
+    margin-top: 10px;
+    text-align: center;
+  }

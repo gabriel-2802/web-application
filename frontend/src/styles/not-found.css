@@ -1,0 +1,16 @@
+.notFound {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #000;
+    text-align: center;
+    flex-direction: column;
+}
+
+ .errorIcon {
+    color: rgb(148, 16, 148);
+ }
