@@ -3,4 +3,33 @@
     display: flex;
     flex-wrap: wrap;
     margin: 20px;
+    position: relative;
+}
+
+.postsFilterLabel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    text-align: center;
+    color: #b4b4d9;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 2rem 0;
+    text-shadow: 0 0 10px rgba(180, 100, 180, 0.3);
+    display: flex;
+    justify-content: center;
+    padding-top: 1rem;
+    flex-basis: 100%;
+}
+
+.noPostsMessage {
+    width: 100%;
+    text-align: center;
+    color: #808099;
+    font-size: 1.1rem;
+    padding: 2rem;
+    margin-top: 1rem;
+    font-style: italic;
 }

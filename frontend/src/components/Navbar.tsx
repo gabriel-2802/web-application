@@ -1,17 +1,29 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import '../styles/navbar.css';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import SearchIcon from '@mui/icons-material/Search';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { LoginContext, isWriter } from '../context/Context';
 import ProfileImage from '../assets/profile.jpg';
 
 const Navbar: FC = () => {
   const { user, dispatch } = useContext(LoginContext);
+  const navigate = useNavigate();
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [showSearchInput, setShowSearchInput] = useState(false);
   
   const handleLogout = () => {
     dispatch({ type: 'LOGOUT' });
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchKeyword.trim()) {
+      navigate(`/?search=${encodeURIComponent(searchKeyword.trim())}`);
+      setSearchKeyword('');
+      setShowSearchInput(false);
+    }
   };
 
   return (
@@ -49,7 +61,22 @@ const Navbar: FC = () => {
           />
         </Link>
         <i className="topSearchIcon">
-          <button className="topSearchButton">
+          {showSearchInput && (
+            <form onSubmit={handleSearch} className="searchForm">
+              <input
+                type="text"
+                placeholder="Search posts..."
+                className="searchInput"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                autoFocus
+              />
+            </form>
+          )}
+          <button 
+            className="topSearchButton"
+            onClick={() => setShowSearchInput(!showSearchInput)}
+          >
             <SearchIcon />
           </button>
         </i>
