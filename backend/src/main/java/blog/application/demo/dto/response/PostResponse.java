@@ -13,6 +13,7 @@ public record PostResponse(
     Long authorId,
     String authorUsername,
     Long collectionId,
+    String collectionName,
     List<CommentResponse> comments
 ) {}
 

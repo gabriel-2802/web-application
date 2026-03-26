@@ -114,9 +114,29 @@ public class PostService extends AbstractService{
             throw new UnauthorizedException("You can only update your own posts");
         }
 
+        // update title if provided
+        if (postDto.title() != null && !postDto.title().isBlank()) {
+            post.setTitle(postDto.title());
+        }
 
+        // update content if provided
+        if (postDto.content() != null && !postDto.content().isBlank()) {
+            post.setContent(postDto.content());
+        }
+
+        // update image URL if provided
         if (postDto.imageUrl() != null) {
             post.setImageUrl(postDto.imageUrl());
+        }
+
+        // update collection if provided
+        if (postDto.collectionId() != null) {
+            PostCollection collection = collectionRepository.findById(postDto.collectionId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Post collection not found with id: " + postDto.collectionId()));
+            post.setCollection(collection);
+        } else {
+            // allow removing collection by passing null
+            post.setCollection(null);
         }
 
         Post updatedPost = postRepository.save(post);

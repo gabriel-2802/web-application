@@ -98,10 +98,22 @@ public abstract class AbstractUser implements UserDetails {
     public abstract String getProfileImageUrl();
 
     /**
+     * Set profile image URL
+     * @param profileImageUrl the profile image URL
+     */
+    public abstract void setProfileImageUrl(String profileImageUrl);
+
+    /**
      * Get website URL (writers only)
      * @return website URL or null
      */
     public abstract String getWebsiteUrl();
+
+    /**
+     * Set website URL
+     * @param websiteUrl the website URL
+     */
+    public abstract void setWebsiteUrl(String websiteUrl);
 
     /**
      * Get location (writers only)
@@ -110,8 +122,20 @@ public abstract class AbstractUser implements UserDetails {
     public abstract String getLocation();
 
     /**
+     * Set location
+     * @param location the location
+     */
+    public abstract void setLocation(String location);
+
+    /**
      * Get professional title (writers only)
      * @return professional title or null
      */
     public abstract String getProfessionalTitle();
+
+    /**
+     * Set professional title
+     * @param professionalTitle the professional title
+     */
+    public abstract void setProfessionalTitle(String professionalTitle);
 }

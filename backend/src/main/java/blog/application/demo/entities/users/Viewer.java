@@ -34,8 +34,23 @@ public class Viewer extends AbstractUser {
     }
 
     @Override
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    @Override
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    @Override
     public String getWebsiteUrl() {
         return null;
+    }
+
+    @Override
+    public void setWebsiteUrl(String websiteUrl) {
+        // Viewers cannot have website URL
     }
 
     @Override
@@ -44,7 +59,17 @@ public class Viewer extends AbstractUser {
     }
 
     @Override
+    public void setLocation(String location) {
+        // Viewers cannot have location
+    }
+
+    @Override
     public String getProfessionalTitle() {
         return null;
+    }
+
+    @Override
+    public void setProfessionalTitle(String professionalTitle) {
+        // Viewers cannot have professional title
     }
 }

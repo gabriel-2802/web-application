@@ -40,4 +40,54 @@ public class Writer extends AbstractUser {
     public boolean canUpdateBio() {
         return true;
     }
+
+    @Override
+    public String getBio() {
+        return bio;
+    }
+
+    @Override
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    @Override
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    @Override
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    @Override
+    public String getWebsiteUrl() {
+        return websiteUrl;
+    }
+
+    @Override
+    public void setWebsiteUrl(String websiteUrl) {
+        this.websiteUrl = websiteUrl;
+    }
+
+    @Override
+    public String getLocation() {
+        return location;
+    }
+
+    @Override
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    @Override
+    public String getProfessionalTitle() {
+        return professionalTitle;
+    }
+
+    @Override
+    public void setProfessionalTitle(String professionalTitle) {
+        this.professionalTitle = professionalTitle;
+    }
 }

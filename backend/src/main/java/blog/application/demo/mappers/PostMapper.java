@@ -16,6 +16,7 @@ public interface PostMapper {
     @Mapping(target = "authorId", source = "author.id")
     @Mapping(target = "authorUsername", source = "author.username")
     @Mapping(target = "collectionId", source = "collection.id")
+    @Mapping(target = "collectionName", source = "collection.name")
     PostResponse toResponse(Post post);
 
     default Post toEntity(CreatePostRequest createPostRequest, Writer author) {

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 
+/**
+ * Rest Controller for posts endpoints
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/posts")

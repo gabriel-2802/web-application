@@ -10,6 +10,7 @@ import blog.application.demo.exceptions.ExistingEmailException;
 import blog.application.demo.exceptions.ExistingUsernameException;
 import blog.application.demo.exceptions.InvalidVerificationTokenException;
 import blog.application.demo.exceptions.ResourceNotFoundException;
+import blog.application.demo.exceptions.WriterAlreadyExistsException;
 import blog.application.demo.mappers.UserMapper;
 import blog.application.demo.repositories.RoleRepository;
 import blog.application.demo.repositories.UserRepository;
@@ -59,6 +60,13 @@ public class AuthService {
         }
 
         AbstractUser user = userMapper.toEntity(registerRequest, constants.ADMIN_REGISTER_CODE);
+
+        // Check if attempting to create a writer when one already exists
+        if (user instanceof blog.application.demo.entities.users.Writer) {
+            if (userRepository.countWriters() > 0) {
+                throw new WriterAlreadyExistsException("Only one writer account is allowed in the system. A writer already exists.");
+            }
+        }
 
         user.setPassword(passwordEncoder.encode(registerRequest.password()));
 

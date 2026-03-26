@@ -4,14 +4,16 @@ import blog.application.demo.dto.request.UpdateBioRequest;
 import blog.application.demo.dto.request.UpdateEmailRequest;
 import blog.application.demo.dto.request.UpdatePasswordRequest;
 import blog.application.demo.dto.request.UpdateUsernameRequest;
+import blog.application.demo.dto.request.UpdateProfileImageUrlRequest;
+import blog.application.demo.dto.request.UpdateWebsiteUrlRequest;
+import blog.application.demo.dto.request.UpdateLocationRequest;
+import blog.application.demo.dto.request.UpdateProfessionalTitleRequest;
 import blog.application.demo.dto.response.UserProfileResponse;
 import blog.application.demo.dto.response.WriterProfileResponse;
 import blog.application.demo.dto.response.PostResponse;
 import blog.application.demo.dto.response.CollectionResponse;
 import blog.application.demo.entities.Comment;
 import blog.application.demo.entities.users.AbstractUser;
-import blog.application.demo.entities.Post;
-import blog.application.demo.entities.PostCollection;
 import blog.application.demo.exceptions.ExistingEmailException;
 import blog.application.demo.exceptions.ExistingUsernameException;
 import blog.application.demo.exceptions.ResourceNotFoundException;
@@ -157,6 +159,102 @@ public class UserService extends AbstractService {
         AbstractUser updatedUser = userRepository.save(currentUser);
         
         return ResponseEntity.ok(mapToUserProfile(updatedUser));
+    }
+
+    /**
+     * Update user's profile image URL (for all authenticated users: writers and viewers)
+     * @param updateProfileImageUrlRequest new profile image URL
+     * @return UserProfileResponse with updated user information
+     */
+    public ResponseEntity<UserProfileResponse> updateProfileImageUrl(UpdateProfileImageUrlRequest updateProfileImageUrlRequest) {
+        AbstractUser currentUser = getCurrentUser();
+        
+        currentUser.setProfileImageUrl(updateProfileImageUrlRequest.profileImageUrl());
+        AbstractUser updatedUser = userRepository.save(currentUser);
+        
+        return ResponseEntity.ok(mapToUserProfile(updatedUser));
+    }
+
+    /**
+     * Update writer's website URL (only for writers)
+     * @param updateWebsiteUrlRequest new website URL
+     * @return UserProfileResponse with updated user information
+     * @throws UnauthorizedException if user is not a writer
+     */
+    public ResponseEntity<UserProfileResponse> updateWebsiteUrl(UpdateWebsiteUrlRequest updateWebsiteUrlRequest) 
+            throws UnauthorizedException {
+        AbstractUser currentUser = getCurrentUser();
+        
+        // check if user can update website URL (uses polymorphism)
+        if (!currentUser.canUpdateBio()) {
+            throw new UnauthorizedException("Only writers can update their website URL");
+        }
+        
+        currentUser.setWebsiteUrl(updateWebsiteUrlRequest.websiteUrl());
+        AbstractUser updatedUser = userRepository.save(currentUser);
+        
+        return ResponseEntity.ok(mapToUserProfile(updatedUser));
+    }
+
+    /**
+     * Update writer's location (only for writers)
+     * @param updateLocationRequest new location
+     * @return UserProfileResponse with updated user information
+     * @throws UnauthorizedException if user is not a writer
+     */
+    public ResponseEntity<UserProfileResponse> updateLocation(UpdateLocationRequest updateLocationRequest) 
+            throws UnauthorizedException {
+        AbstractUser currentUser = getCurrentUser();
+        
+        // check if user can update location (uses polymorphism)
+        if (!currentUser.canUpdateBio()) {
+            throw new UnauthorizedException("Only writers can update their location");
+        }
+        
+        currentUser.setLocation(updateLocationRequest.location());
+        AbstractUser updatedUser = userRepository.save(currentUser);
+        
+        return ResponseEntity.ok(mapToUserProfile(updatedUser));
+    }
+
+    /**
+     * Update writer's professional title (only for writers)
+     * @param updateProfessionalTitleRequest new professional title
+     * @return UserProfileResponse with updated user information
+     * @throws UnauthorizedException if user is not a writer
+     */
+    public ResponseEntity<UserProfileResponse> updateProfessionalTitle(UpdateProfessionalTitleRequest updateProfessionalTitleRequest) 
+            throws UnauthorizedException {
+        AbstractUser currentUser = getCurrentUser();
+        
+        // check if user can update professional title (uses polymorphism)
+        if (!currentUser.canUpdateBio()) {
+            throw new UnauthorizedException("Only writers can update their professional title");
+        }
+        
+        currentUser.setProfessionalTitle(updateProfessionalTitleRequest.professionalTitle());
+        AbstractUser updatedUser = userRepository.save(currentUser);
+        
+        return ResponseEntity.ok(mapToUserProfile(updatedUser));
+    }
+
+    /**
+     * Get the single writer's bio
+     * Public endpoint - retrieves the bio of THE writer in the system
+     * @return ResponseEntity containing the writer's bio string
+     * @throws ResourceNotFoundException if no writer exists
+     */
+    public ResponseEntity<String> getWriterBio() 
+            throws ResourceNotFoundException {
+        // Find the single writer in the system
+        List<AbstractUser> allUsers = userRepository.findAll();
+        AbstractUser writer = allUsers.stream()
+                .filter(u -> "WRITER".equals(u.getUserType()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("No writer found in the system"));
+        
+        String bio = writer.getBio();
+        return ResponseEntity.ok(bio != null ? bio : "");
     }
 
     /**

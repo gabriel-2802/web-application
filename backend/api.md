@@ -10,6 +10,7 @@ This document provides comprehensive documentation for all API endpoints in the 
 3. [User Controller](#user-controller)
 4. [Comment Controller](#comment-controller)
 5. [Collection Controller](#collection-controller)
+6. [Feedback Controller](#feedback-controller)
 
 ---
 
@@ -522,7 +523,145 @@ This document provides comprehensive documentation for all API endpoints in the 
 
 ---
 
-### 8. Delete Account
+### 8. Update Profile Image
+- **Endpoint:** `PUT /api/users/profile-image`
+- **Authentication Required:** Yes (JWT Token)
+- **Role Required:** Authenticated user (any role)
+- **Request Body:**
+  ```json
+  {
+    "profileImageUrl": "string (max 1000 chars, required)"
+  }
+  ```
+- **Response Body (Success - 200):**
+  ```json
+  {
+    "id": "long",
+    "username": "string",
+    "email": "string",
+    "userType": "string",
+    "bio": "string",
+    "profileImageUrl": "string",
+    "websiteUrl": "string",
+    "location": "string",
+    "professionalTitle": "string",
+    "createdAt": "datetime",
+    "updatedAt": "datetime",
+    "roles": ["string"]
+  }
+  ```
+
+---
+
+### 9. Update Website URL (Writers Only)
+- **Endpoint:** `PUT /api/users/website-url`
+- **Authentication Required:** Yes (JWT Token)
+- **Role Required:** Authenticated user (but only writers can update)
+- **Request Body:**
+  ```json
+  {
+    "websiteUrl": "string (max 1000 chars, required)"
+  }
+  ```
+- **Response Body (Success - 200):**
+  ```json
+  {
+    "id": "long",
+    "username": "string",
+    "email": "string",
+    "userType": "string",
+    "bio": "string",
+    "profileImageUrl": "string",
+    "websiteUrl": "string",
+    "location": "string",
+    "professionalTitle": "string",
+    "createdAt": "datetime",
+    "updatedAt": "datetime",
+    "roles": ["string"]
+  }
+  ```
+- **Response Body (Error):**
+  - `401 Unauthorized`: If user is not a writer (UnauthorizedException)
+
+---
+
+### 10. Update Location (Writers Only)
+- **Endpoint:** `PUT /api/users/location`
+- **Authentication Required:** Yes (JWT Token)
+- **Role Required:** Authenticated user (but only writers can update)
+- **Request Body:**
+  ```json
+  {
+    "location": "string (max 500 chars, required)"
+  }
+  ```
+- **Response Body (Success - 200):**
+  ```json
+  {
+    "id": "long",
+    "username": "string",
+    "email": "string",
+    "userType": "string",
+    "bio": "string",
+    "profileImageUrl": "string",
+    "websiteUrl": "string",
+    "location": "string",
+    "professionalTitle": "string",
+    "createdAt": "datetime",
+    "updatedAt": "datetime",
+    "roles": ["string"]
+  }
+  ```
+- **Response Body (Error):**
+  - `401 Unauthorized`: If user is not a writer (UnauthorizedException)
+
+---
+
+### 11. Update Professional Title (Writers Only)
+- **Endpoint:** `PUT /api/users/professional-title`
+- **Authentication Required:** Yes (JWT Token)
+- **Role Required:** Authenticated user (but only writers can update)
+- **Request Body:**
+  ```json
+  {
+    "professionalTitle": "string (max 500 chars, required)"
+  }
+  ```
+- **Response Body (Success - 200):**
+  ```json
+  {
+    "id": "long",
+    "username": "string",
+    "email": "string",
+    "userType": "string",
+    "bio": "string",
+    "profileImageUrl": "string",
+    "websiteUrl": "string",
+    "location": "string",
+    "professionalTitle": "string",
+    "createdAt": "datetime",
+    "updatedAt": "datetime",
+    "roles": ["string"]
+  }
+  ```
+- **Response Body (Error):**
+  - `401 Unauthorized`: If user is not a writer (UnauthorizedException)
+
+---
+
+### 12. Get Writer Bio (Public)
+- **Endpoint:** `GET /api/users/writer/bio`
+- **Authentication Required:** No (Public endpoint)
+- **Role Required:** None
+- **Request Body:** None
+- **Response Body (Success - 200):**
+  ```
+  "Writer's biography text"
+  ```
+
+---
+
+### 13. Delete Account
 - **Endpoint:** `DELETE /api/users/account`
 - **Authentication Required:** Yes (JWT Token)
 - **Role Required:** Authenticated user (any role)
@@ -997,6 +1136,72 @@ This document provides comprehensive documentation for all API endpoints in the 
 
 ---
 
+## Feedback Controller
+
+**Base Path:** `/api/feedback`
+
+### 1. Submit Feedback
+- **Endpoint:** `POST /api/feedback/submit`
+- **Authentication Required:** No
+- **Role Required:** None
+- **Request Body:**
+  ```json
+  {
+    "subject": "string (required, not blank)",
+    "message": "string (required, not blank)",
+    "email": "string (valid email, optional)",
+    "name": "string (optional)"
+  }
+  ```
+- **Response Body (Success - 200):**
+  ```json
+  {
+    "id": "long",
+    "subject": "string",
+    "message": "string",
+    "email": "string",
+    "name": "string",
+    "createdAt": "datetime"
+  }
+  ```
+
+---
+
+### 2. Get All Feedback
+- **Endpoint:** `GET /api/feedback/all`
+- **Authentication Required:** No
+- **Role Required:** None
+- **Request Body:** None
+- **Response Body (Success - 200):**
+  ```json
+  [
+    {
+      "id": "long",
+      "subject": "string",
+      "message": "string",
+      "email": "string",
+      "name": "string",
+      "createdAt": "datetime"
+    }
+  ]
+  ```
+
+---
+
+### 3. Delete Feedback
+- **Endpoint:** `DELETE /api/feedback/delete/{id}`
+- **Authentication Required:** No
+- **Role Required:** None
+- **Path Parameters:**
+  - `id`: long (feedback ID)
+- **Request Body:** None
+- **Response Body (Success - 200):**
+  ```
+  (No content - 204 status)
+  ```
+
+---
+
 ## Summary Table
 
 | Controller | Endpoint | Method | Auth Required | Role Required |
@@ -1015,6 +1220,11 @@ This document provides comprehensive documentation for all API endpoints in the 
 | **User** | `/api/users/email` | PUT | Yes | Any |
 | **User** | `/api/users/password` | PUT | Yes | Any |
 | **User** | `/api/users/bio` | PUT | Yes | WRITER only |
+| **User** | `/api/users/profile-image` | PUT | Yes | Any |
+| **User** | `/api/users/website-url` | PUT | Yes | WRITER only |
+| **User** | `/api/users/location` | PUT | Yes | WRITER only |
+| **User** | `/api/users/professional-title` | PUT | Yes | WRITER only |
+| **User** | `/api/users/writer/bio` | GET | No | None |
 | **User** | `/api/users/writers/{writerId}/profile` | GET | No | None |
 | **User** | `/api/users/writer-profile` | GET | Yes | WRITER only |
 | **User** | `/api/users/account` | DELETE | Yes | Any |
@@ -1033,6 +1243,9 @@ This document provides comprehensive documentation for all API endpoints in the 
 | **Collection** | `/api/collections/add/{id}/posts` | PUT | Yes | WRITER |
 | **Collection** | `/api/collections/remove/{id}/posts` | PUT | Yes | WRITER |
 | **Collection** | `/api/collections/delete/{id}` | DELETE | Yes | WRITER |
+| **Feedback** | `/api/feedback/submit` | POST | No | None |
+| **Feedback** | `/api/feedback/all` | GET | No | None |
+| **Feedback** | `/api/feedback/delete/{id}` | DELETE | No | None |
 
 ---
 
@@ -1065,7 +1278,4 @@ Common HTTP status codes used in error responses:
 
 ---
 
-**Documentation Updated:** March 25, 2026
-**Email Verification:** ✅ Implemented with MailTrap
-**Build Status:** ✅ SUCCESS
 

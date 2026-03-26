@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 
+/**
+ * Rest controller that handles collection-related endpoints.
+ */
 @RestController
 @RequestMapping("/api/collections")
 @AllArgsConstructor
