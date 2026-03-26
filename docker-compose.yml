@@ -1,0 +1,148 @@
+version: '3.9'
+
+services:
+  # ============================================
+  # PostgreSQL Database (Internal - data-net only)
+  # ============================================
+  postgres:
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgresadmin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-StrongPassword123!}
+      POSTGRES_DB: ${DB_NAME:-my_pq_db}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
+    volumes:
+      # Mount initialization scripts if needed
+      - ./backend/target/classes/db/migration:/docker-entrypoint-initdb.d:ro
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - data-net
+    # NO PORTS EXPOSED - Internal communication only
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  # ============================================
+  # Spring Boot Backend (Internal - dmz-net + data-net)
+  # ============================================
+  backend:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    container_name: spring-backend
+    environment:
+      # Database Connection
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-my_pq_db}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-postgresadmin}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-StrongPassword123!}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+
+      # JPA/Hibernate
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL: "false"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+
+      # Flyway (if enabled)
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_FLYWAY_LOCATIONS: classpath:db/migration
+
+      # JWT Configuration
+      APP_JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-prod}
+      APP_JWT_EXPIRATION: ${JWT_EXPIRATION:-2592000000}
+
+      # Admin Configuration
+      APP_ADMIN_REGISTER_CODE: ${ADMIN_REGISTER_CODE:-282828282}
+
+      # Mail Configuration (MailTrap)
+      SPRING_MAIL_HOST: ${MAIL_HOST:-sandbox.smtp.mailtrap.io}
+      SPRING_MAIL_PORT: ${MAIL_PORT:-2525}
+      SPRING_MAIL_USERNAME: ${MAIL_USERNAME:-your-username}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD:-your-password}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: "false"
+      SPRING_MAIL_FROM: ${MAIL_FROM:-noreply@example.com}
+
+      # Email Verification
+      APP_EMAIL_VERIFICATION_EXPIRATION: ${EMAIL_VERIFICATION_EXPIRATION:-86400000}
+      APP_FRONTEND_URL: ${FRONTEND_URL:-http://localhost/verify-email}
+
+      # Server Configuration
+      SERVER_PORT: 8080
+      SERVER_SERVLET_CONTEXT_PATH: /
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - dmz-net
+      - data-net
+    # NO PORTS EXPOSED - Internal communication only (accessed via nginx)
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # ============================================
+  # Nginx Frontend (Public - dmz-net only)
+  # ============================================
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost}
+    container_name: nginx-frontend
+    environment:
+      # These are build-time variables; runtime proxy is configured in Nginx
+      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost}
+    ports:
+      # ONLY THIS SERVICE EXPOSES PORTS TO HOST
+      - "${FRONTEND_PORT:-80}:80"
+    networks:
+      - dmz-net
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/index.html"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  # DMZ Network: Frontend + Backend (exposed to frontend logic)
+  dmz-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+  # Data Network: Backend + Database (internal data access)
+  data-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  postgres_data:
+    driver: local
