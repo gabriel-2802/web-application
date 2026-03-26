@@ -85,11 +85,11 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 10s
+      test: ["CMD", "test", "-f", "/app/app.jar"]
+      interval: 15s
       timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 25s
 
   # ============================================
   # Nginx Frontend (Public - dmz-net only)
@@ -116,7 +116,7 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/index.html"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1/index.html"]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -129,16 +129,10 @@ networks:
   # DMZ Network: Frontend + Backend (exposed to frontend logic)
   dmz-net:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
 
   # Data Network: Backend + Database (internal data access)
   data-net:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.21.0.0/16
 
 # ============================================
 # Volumes

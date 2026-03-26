@@ -29,16 +29,18 @@ FROM nginx:1.27-alpine
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
 
-# Create non-root user for Nginx
-RUN addgroup -g 1001 -S nginx && \
-    adduser -S nginx -u 1001 -G nginx && \
-    chown -R nginx:nginx /usr/share/nginx
+# Nginx user already exists in base image, just ensure permissions
+RUN chown -R nginx:nginx /usr/share/nginx && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    touch /var/run/nginx.pid && \
+    chown nginx:nginx /var/run/nginx.pid
 
 # Remove default nginx config
 RUN rm /etc/nginx/conf.d/default.conf
 
-# Create nginx config with proper reverse proxy and security headers
-COPY <<EOF /etc/nginx/conf.d/app.conf
+# Create nginx config file with proper reverse proxy and security headers
+RUN cat > /etc/nginx/conf.d/app.conf <<'NGINXEOF'
 server {
     listen 80;
     server_name _;
@@ -69,7 +71,7 @@ server {
         proxy_pass http://backend:8080/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
+        proxy_set_header Connection "upgrade";
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -83,7 +85,7 @@ server {
         add_header Cache-Control "public, immutable";
     }
 }
-EOF
+NGINXEOF
 
 # Copy built React app from builder
 COPY --from=builder --chown=nginx:nginx /app/build /usr/share/nginx/html

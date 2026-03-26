@@ -7,7 +7,7 @@
 
 ## docker-build: Build all Docker images (backend, frontend, database)
 docker-build:
-	@echo "🏗️  Building Docker images..."
+	@echo "Building Docker images..."
 	docker-compose build --no-cache
 
 ## docker-build-cache: Build images with cache (faster)
@@ -30,7 +30,7 @@ docker-down:
 
 ## docker-restart: Restart all containers
 docker-restart: docker-down docker-up
-	@echo "🔄 Containers restarted"
+	@echo "Containers restarted"
 
 ## docker-logs: Tail logs from all containers
 docker-logs:
@@ -56,12 +56,12 @@ docker-logs-db:
 
 ## docker-ps: List running containers
 docker-ps:
-	@echo "🐳 Running containers:"
+	@echo "Running containers:"
 	docker-compose ps
 
 ## docker-status: Show detailed container status
 docker-status:
-	@echo "📊 Container Status & Health:"
+	@echo "Container Status & Health:"
 	@docker-compose ps --format "table {{.Service}}\t{{.Status}}\t{{.Names}}"
 
 ## docker-health: Check health status of all services
@@ -195,12 +195,12 @@ docker-build-db:
 
 ## docker-validate: Validate docker-compose.yml syntax
 docker-validate:
-	@echo "✅ Validating docker-compose.yml..."
+	@echo "Validating docker-compose.yml..."
 	docker-compose config > /dev/null && echo "✅ docker-compose.yml is valid"
 
 ## docker-show-config: Display resolved docker-compose configuration
 docker-show-config:
-	@echo "📋 Docker Compose Configuration:"
+	@echo "Docker Compose Configuration:"
 	docker-compose config
 
 ## docker-help: Show all Docker-related make targets
