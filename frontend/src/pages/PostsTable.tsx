@@ -1,43 +1,34 @@
 import { FC, useState, useEffect, useContext, useCallback } from 'react';
-import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  CircularProgress,
-  Alert,
-  Container,
-  Stack,
-} from '@mui/material';
+import { CircularProgress, Stack } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import axios from 'axios';
 import { Post, LoginContext } from '../context/Context';
-import { POST_ENDPOINTS } from '../constants/api';
+import { POST_ENDPOINTS, COLLECTION_ENDPOINTS } from '../constants/api';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import SearchBar from '../components/SearchBar';
 import Pagination from '../components/Pagination';
 import FormInput from '../components/FormInput';
+import '../styles/posts-table.css';
 
 interface FormData {
   title: string;
   content: string;
 }
 
+interface Collection {
+  id: number;
+  name: string;
+  description?: string;
+}
+
 const PostsTable: FC = () => {
   const { jwt } = useContext(LoginContext);
   const [posts, setPosts] = useState<Post[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,6 +43,17 @@ const PostsTable: FC = () => {
   const [deleting, setDeleting] = useState(false);
 
   const ROWS_PER_PAGE = 10;
+
+  const fetchCollections = useCallback(async () => {
+    try {
+      const res = await axios.get(COLLECTION_ENDPOINTS.ALL, {
+        headers: { Authorization: `Bearer ${jwt}` },
+      });
+      setCollections(res.data);
+    } catch (err) {
+      console.error('Failed to fetch collections:', err);
+    }
+  }, [jwt]);
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -71,7 +73,10 @@ const PostsTable: FC = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [fetchPosts]);
+    if (jwt) {
+      fetchCollections();
+    }
+  }, [fetchPosts, fetchCollections, jwt]);
 
   const handleSearch = (query: string) => {
     const lowercaseQuery = query.toLowerCase();
@@ -208,94 +213,152 @@ const PostsTable: FC = () => {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   };
 
+  const handleCollectionChange = async (postId: number | undefined, collectionId: number | null) => {
+    if (!postId) return;
+
+    try {
+      if (collectionId) {
+        // Add post to collection
+        await axios.put(
+          COLLECTION_ENDPOINTS.ADD_POSTS(collectionId.toString()),
+          null,
+          { 
+            params: { postIds: postId },
+            headers: { Authorization: `Bearer ${jwt}` } 
+          }
+        );
+      } else {
+        // Remove post from collection
+        const post = posts.find((p) => p.id === postId);
+        if (post?.collectionId) {
+          await axios.put(
+            COLLECTION_ENDPOINTS.REMOVE_POSTS(post.collectionId.toString()),
+            null,
+            { 
+              params: { postIds: postId },
+              headers: { Authorization: `Bearer ${jwt}` } 
+            }
+          );
+        }
+      }
+
+      // Update local state
+      setPosts(
+        posts.map((p) =>
+          p.id === postId
+            ? {
+                ...p,
+                collectionId: collectionId || undefined,
+                collectionName: collections.find((c) => c.id === collectionId)?.name || undefined,
+              }
+            : p
+        )
+      );
+
+      setFilteredPosts(
+        filteredPosts.map((p) =>
+          p.id === postId
+            ? {
+                ...p,
+                collectionId: collectionId || undefined,
+                collectionName: collections.find((c) => c.id === collectionId)?.name || undefined,
+              }
+            : p
+        )
+      );
+    } catch (err) {
+      console.error('Failed to assign collection:', err);
+      setError('Failed to assign collection. Please try again.');
+    }
+  };
+
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
+      <div className="posts-table-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
         <CircularProgress />
-      </Container>
+      </div>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              My Posts
-            </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAddClick}
-            >
-              Add Post
-            </Button>
-          </Box>
+    <div className="posts-table-container">
+      <div className="posts-table-card">
+        <div className="posts-table-header">
+          <h2 className="posts-table-title">My Posts</h2>
+          <button className="posts-add-button" onClick={handleAddClick}>
+            <AddIcon style={{ marginRight: '8px', fontSize: '18px' }} />
+            Add Post
+          </button>
+        </div>
 
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {error && <div style={{ color: '#d4a574', margin: '16px', padding: '12px', backgroundColor: 'rgba(212, 165, 116, 0.1)', borderRadius: '4px' }}>{error}</div>}
 
+        <div style={{ padding: '16px' }}>
           <SearchBar onSearch={handleSearch} onClear={handleClearSearch} placeholder="Search posts by title or content..." />
+        </div>
 
-          {filteredPosts.length === 0 ? (
-            <Typography variant="body1" sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
-              {posts.length === 0 ? 'No posts yet.' : 'No posts match your search.'}
-            </Typography>
-          ) : (
-            <>
-              <TableContainer component={Paper}>
-                <Table size="small">
-                  <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Content</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Created</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }} align="right">Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {paginatedData.map((post) => (
-                      <TableRow key={post.id} hover>
-                        <TableCell sx={{ maxWidth: 150 }}>{truncateText(post.title, 40)}</TableCell>
-                        <TableCell sx={{ maxWidth: 200 }}>{truncateText(post.content, 50)}</TableCell>
-                        <TableCell>{formatDate(post.createdAt)}</TableCell>
-                        <TableCell align="right">
-                          <Stack direction="row" spacing={1} justifyContent="flex-end">
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              startIcon={<EditIcon />}
-                              onClick={() => handleEditClick(post)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              color="error"
-                              startIcon={<DeleteIcon />}
-                              onClick={() => handleDeleteClick(post.id)}
-                            >
-                              Delete
-                            </Button>
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                />
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+        {filteredPosts.length === 0 ? (
+          <div className="posts-empty-state">
+            {posts.length === 0 ? 'No posts yet.' : 'No posts match your search.'}
+          </div>
+        ) : (
+          <>
+            <table className="posts-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Content</th>
+                  <th>Collection</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedData.map((post) => (
+                  <tr key={post.id}>
+                    <td>{truncateText(post.title, 40)}</td>
+                    <td>{truncateText(post.content, 50)}</td>
+                    <td>
+                      <select
+                        className="posts-collection-select"
+                        value={post.collectionId || ''}
+                        onChange={(e) => handleCollectionChange(post.id, e.target.value ? Number(e.target.value) : null)}
+                      >
+                        <option value="">No Collection</option>
+                        {collections.map((collection) => (
+                          <option key={collection.id} value={collection.id}>
+                            {collection.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>{formatDate(post.createdAt)}</td>
+                    <td>
+                      <div className="posts-table-actions">
+                        <button className="posts-edit-button" onClick={() => handleEditClick(post)}>
+                          <EditIcon style={{ marginRight: '4px', fontSize: '14px' }} />
+                          Edit
+                        </button>
+                        <button className="posts-delete-button" onClick={() => handleDeleteClick(post.id)}>
+                          <DeleteIcon style={{ marginRight: '4px', fontSize: '14px' }} />
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
+          </>
+        )}
+      </div>
 
       {/* Add/Edit Modal */}
       <Modal
@@ -304,7 +367,7 @@ const PostsTable: FC = () => {
         onClose={() => setOpenModal(false)}
         size="medium"
       >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <FormInput
             name="title"
             label="Title"
@@ -326,22 +389,24 @@ const PostsTable: FC = () => {
             helperText={formErrors.content}
           />
           <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button
-              variant="outlined"
-              onClick={() => setOpenModal(false)}
+            <button 
+              className="posts-edit-button" 
+              onClick={() => setOpenModal(false)} 
               disabled={submitting}
+              style={{ cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.6 : 1 }}
             >
               Cancel
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleFormSubmit}
+            </button>
+            <button 
+              className="posts-add-button" 
+              onClick={handleFormSubmit} 
               disabled={submitting}
+              style={{ cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.6 : 1 }}
             >
               {submitting ? 'Saving...' : modalMode === 'add' ? 'Create' : 'Update'}
-            </Button>
+            </button>
           </Stack>
-        </Box>
+        </div>
       </Modal>
 
       {/* Delete Confirmation Dialog */}
@@ -359,7 +424,7 @@ const PostsTable: FC = () => {
         isLoading={deleting}
         isDangerous={true}
       />
-    </Container>
+    </div>
   );
 };
 

@@ -1,3 +1,13 @@
 .home {
-    display: flex;
+  display: flex;
+  background-color: var(--bg-dark);
+  min-height: calc(100vh - 70px);
+  gap: var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .home {
+    flex-direction: column;
+    gap: var(--spacing-md);
   }
+}

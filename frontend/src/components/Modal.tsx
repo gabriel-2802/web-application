@@ -34,17 +34,32 @@ const Modal: FC<ModalProps> = ({ open, title, children, onClose, size = 'medium'
           width: getWidth(),
           maxHeight: '90vh',
           overflowY: 'auto',
-          bgcolor: 'background.paper',
+          bgcolor: 'var(--bg-card, #1a1a2e)',
           borderRadius: 2,
           boxShadow: 24,
           p: 4,
+          border: '1px solid var(--border-color, rgba(139, 123, 163, 0.3))',
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
+          <Typography 
+            variant="h6" 
+            component="h2" 
+            sx={{ 
+              fontWeight: 600,
+              color: 'var(--text-primary, #e0e0e0)',
+              fontSize: '1.5rem',
+              letterSpacing: '0.8px',
+              fontFamily: 'var(--font-serif-heading, serif)',
+            }}
+          >
             {title}
           </Typography>
-          <IconButton onClick={onClose} size="small">
+          <IconButton 
+            onClick={onClose} 
+            size="small"
+            sx={{ color: 'var(--text-primary, #e0e0e0)' }}
+          >
             <CloseIcon />
           </IconButton>
         </Box>

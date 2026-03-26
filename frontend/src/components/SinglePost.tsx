@@ -69,19 +69,18 @@ const SinglePost: FC = () => {
         </h1>
         <div className="singlePostInfo">
           <span className="singlePostAuthor">Author: {post?.author}</span>
-          {post?.collectionId && (
-            <span
-              className="singlePostCollection"
-              onClick={handleCollectionClick}
-              style={{ cursor: 'pointer', color: '#d4a5ff', marginLeft: '15px' }}
-            >
-              More at {post.collectionName || `#${post.collectionId}`}
-            </span>
-          )}
           <p className="singlePostDesc">{post?.content}</p>
           <span className="singlePostDate">
             Created at: {new Date(post?.createdAt || '').toDateString()}
           </span>
+          {post?.collectionId && (
+            <button
+              className="collectionButton"
+              onClick={handleCollectionClick}
+            >
+              View Collection: {post.collectionName || `#${post.collectionId}`}
+            </button>
+          )}
         </div>
       </div>
       {post?.id && <CommentSection postId={post.id} />}

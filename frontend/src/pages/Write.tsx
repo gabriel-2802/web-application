@@ -31,31 +31,18 @@ const Write: FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditMode);
 
-  // Check if user is authenticated and is a writer
   useEffect(() => {
-    console.log('AUTH CHECK:', {
-      hasJwt: !!jwt,
-      hasUser: !!user,
-      isWriter: user ? `ROLE_WRITER: ${user.roles?.some((r: any) => typeof r === 'string' ? r === 'ROLE_WRITER' : r.authority === 'ROLE_WRITER')}` : 'N/A',
-      userRoles: user?.roles,
-    });
-
     if (!jwt || !user) {
-      console.log('Not authenticated, redirecting to login');
       nav('/login');
       return;
     }
-    
     if (!isWriter(user)) {
-      console.log('User is not a writer');
       setError('You do not have permission to write posts. Only writers can create posts.');
       setTimeout(() => nav('/'), 3000);
       return;
     }
-    console.log('User authenticated and is a writer');
   }, [jwt, user, nav]);
 
-  // Fetch collections
   useEffect(() => {
     const fetchCollections = async () => {
       try {
@@ -68,28 +55,17 @@ const Write: FC = () => {
     fetchCollections();
   }, []);
 
-  // Fetch post data when in edit mode
   useEffect(() => {
     if (isEditMode && postId) {
-      console.log('EDIT MODE: Fetching post', { postId, isEditMode });
       const fetchPost = async () => {
         try {
-          const endpoint = POST_ENDPOINTS.FIND(postId);
-          console.log('Fetching from endpoint:', endpoint);
-          const res = await axios.get(endpoint);
+          const res = await axios.get(POST_ENDPOINTS.FIND(postId));
           const post = res.data;
-          console.log('Post fetched successfully:', post);
           setTitle(post.title || '');
           setText(post.content || '');
           setCollectionId(post.collectionId || '');
           setIsLoading(false);
         } catch (err: any) {
-          console.error('Failed to fetch post:', err);
-          console.error('Error details:', {
-            message: err.message,
-            status: err.response?.status,
-            data: err.response?.data,
-          });
           setError('Failed to load post for editing.');
           setIsLoading(false);
           setTimeout(() => nav('/'), 3000);
@@ -97,13 +73,9 @@ const Write: FC = () => {
       };
       fetchPost();
     } else if (statePost) {
-      // Fallback to state if available (for backward compatibility)
-      console.log('Using state post:', statePost);
       setTitle(statePost.title || '');
       setText(statePost.content || '');
       setCollectionId(statePost.collectionId || '');
-    } else {
-      console.log('CREATE MODE: New post');
     }
   }, [isEditMode, postId, statePost, nav]);
 
@@ -118,66 +90,25 @@ const Write: FC = () => {
     setIsSubmitting(true);
     setError('');
 
-    const newPost: any = {
-      title: title,
-      content: text,
-    };
-
-    if (collectionId) {
-      newPost.collectionId = collectionId;
-    }
-
-    console.log('SUBMIT: Preparing to save post', {
-      isEditMode,
-      postId,
-      hasJwt: !!jwt,
-      newPost,
-      user: user?.username,
-      userRoles: user?.roles,
-    });
+    const newPost: any = { title, content: text };
+    if (collectionId) newPost.collectionId = collectionId;
 
     try {
       if (isEditMode && postId) {
-        const endpoint = POST_ENDPOINTS.UPDATE(postId);
-        console.log('EDIT: Sending PUT request', {
-          endpoint,
-          payload: newPost,
-          headers: { Authorization: `Bearer ${jwt?.substring(0, 20)}...` },
-        });
-        
-        const response = await axios.put(
-          endpoint,
-          newPost,
-          { headers: { Authorization: `Bearer ${jwt}` } }
-        );
-        
-        console.log('POST UPDATED:', response.data);
-      } else {
-        console.log('CREATE: Sending POST request', {
-          endpoint: POST_ENDPOINTS.CREATE,
-          payload: newPost,
-        });
-        
-        const response = await axios.post(POST_ENDPOINTS.CREATE, newPost, {
+        await axios.put(POST_ENDPOINTS.UPDATE(postId), newPost, {
           headers: { Authorization: `Bearer ${jwt}` },
         });
-        
-        console.log('POST CREATED:', response.data);
+      } else {
+        await axios.post(POST_ENDPOINTS.CREATE, newPost, {
+          headers: { Authorization: `Bearer ${jwt}` },
+        });
       }
       setIsSubmitting(false);
       nav('/');
     } catch (err: any) {
       setIsSubmitting(false);
-      const errorMessage = err.response?.data?.message || err.response?.data || err.message || 'Failed to save post. Please try again.';
-      
-      console.error('SUBMIT FAILED:', {
-        message: errorMessage,
-        status: err.response?.status,
-        statusText: err.response?.statusText,
-        fullError: err.response?.data,
-        errorStack: err.stack,
-      });
-      
+      const errorMessage =
+        err.response?.data?.message || err.response?.data || err.message || 'Failed to save post.';
       setError(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
     }
   };
@@ -185,7 +116,7 @@ const Write: FC = () => {
   if (!jwt || !user) {
     return (
       <div className="write">
-        <div style={{ padding: '20px', textAlign: 'center' }}>
+        <div className="writeMessage">
           <p>Redirecting to login...</p>
         </div>
       </div>
@@ -195,7 +126,7 @@ const Write: FC = () => {
   if (!isWriter(user)) {
     return (
       <div className="write">
-        <div style={{ padding: '20px', textAlign: 'center', color: 'red' }}>
+        <div className="writeAccessDenied">
           <h2>Access Denied</h2>
           <p>You do not have permission to write posts. Only writers can create posts.</p>
           <p>Register with a writer code to become a writer.</p>
@@ -207,7 +138,7 @@ const Write: FC = () => {
   if (isLoading) {
     return (
       <div className="write">
-        <div style={{ padding: '20px', textAlign: 'center' }}>
+        <div className="writeMessage">
           <p>Loading post...</p>
         </div>
       </div>
@@ -216,15 +147,21 @@ const Write: FC = () => {
 
   return (
     <div className="write">
-      <img
-        className="writeImg"
-        src={file != null ? URL.createObjectURL(file) : Image}
-        alt=""
-      />
       <form className="writeForm" onSubmit={handleSubmit}>
-        <div className="writeFormGroup">
-          <label className="fileInput" htmlFor="fileInput">
-            <AddPhotoAlternateIcon />
+
+        {/* ── Image preview ── */}
+        <div className="writeImageWrapper">
+          <img
+            className="writeImg"
+            src={file != null ? URL.createObjectURL(file) : Image}
+            alt=""
+          />
+        </div>
+
+        {/* ── Title row: upload icon + title input ── */}
+        <div className="writeTitleRow">
+          <label className="writeIcon" htmlFor="fileInput" title="Change cover image">
+            <AddPhotoAlternateIcon fontSize="small" />
           </label>
           <input
             type="file"
@@ -232,7 +169,6 @@ const Write: FC = () => {
             style={{ display: 'none' }}
             onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
           />
-
           <input
             type="text"
             placeholder="Title"
@@ -242,55 +178,52 @@ const Write: FC = () => {
             value={title}
           />
         </div>
-        <div className="writeFormGroup">
-          <textarea
-            placeholder="State..."
-            className="writeInput writeText"
-            onChange={(e) => setText(e.target.value)}
-            value={text}
-          />
-        </div>
-        <div className="writeFormGroup">
-          <select
-            className="writeInput"
-            value={collectionId}
-            onChange={(e) => setCollectionId(e.target.value ? parseInt(e.target.value) : '')}
-          >
-            <option value="">-- Select a Collection (Optional) --</option>
-            {collections.map((collection) => (
-              <option key={collection.id} value={collection.id}>
-                {collection.name}
-              </option>
-            ))}
-          </select>
-        </div>
+
+        {/* ── Divider ── */}
+        <div className="writeDivider" />
+
+        {/* ── Body textarea ── */}
+        <textarea
+          placeholder="State..."
+          className="writeText"
+          onChange={(e) => setText(e.target.value)}
+          value={text}
+        />
+
+        {/* ── Collection select ── */}
+        <select
+          className="writeSelect"
+          value={collectionId}
+          onChange={(e) => setCollectionId(e.target.value ? parseInt(e.target.value) : '')}
+        >
+          <option value="">— Select a Collection (Optional) —</option>
+          {collections.map((collection) => (
+            <option key={collection.id} value={collection.id}>
+              {collection.name}
+            </option>
+          ))}
+        </select>
+
+        {/* ── Error ── */}
         {error && (
-          <div style={{ 
-            color: 'red', 
-            marginBottom: '10px',
-            padding: '10px',
-            backgroundColor: '#ffe6e6',
-            borderRadius: '4px',
-            border: '1px solid red'
-          }}>
+          <div className="writeError">
             <strong>Error:</strong> {error}
           </div>
         )}
+
+        {/* ── Debug (edit mode only) ── */}
         {isEditMode && (
-          <div style={{
-            color: '#666',
-            marginBottom: '10px',
-            padding: '8px',
-            backgroundColor: '#f0f0f0',
-            borderRadius: '4px',
-            fontSize: '12px'
-          }}>
+          <div className="writeDebug">
             <strong>Debug Info:</strong> Editing post ID: {postId}
           </div>
         )}
+
+        {/* ── Submit ── */}
         <button className="writeSubmit" type="submit" disabled={isSubmitting}>
           <PublishIcon />
+          <span>{isEditMode ? 'Update' : 'Publish'}</span>
         </button>
+
       </form>
     </div>
   );

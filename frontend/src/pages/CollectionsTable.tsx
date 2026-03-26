@@ -1,22 +1,5 @@
 import { FC, useState, useEffect, useContext, useCallback } from 'react';
-import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  CircularProgress,
-  Alert,
-  Container,
-  Stack,
-} from '@mui/material';
+import { CircularProgress, Stack } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -28,6 +11,7 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import SearchBar from '../components/SearchBar';
 import Pagination from '../components/Pagination';
 import FormInput from '../components/FormInput';
+import '../styles/collections-table.css';
 
 interface Collection {
   id?: number;
@@ -228,92 +212,76 @@ const CollectionsTable: FC = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
+      <div className="collections-table-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
         <CircularProgress />
-      </Container>
+      </div>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              My Collections
-            </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAddClick}
-            >
-              Add Collection
-            </Button>
-          </Box>
+    <div className="collections-table-container">
+      <div className="collections-table-card">
+        <div className="collections-table-header">
+          <h2 className="collections-table-title">My Collections</h2>
+          <button className="collections-add-button" onClick={handleAddClick}>
+            <AddIcon style={{ marginRight: '8px', fontSize: '18px' }} />
+            Add Collection
+          </button>
+        </div>
 
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {error && <div style={{ color: '#d4a574', margin: '16px', padding: '12px', backgroundColor: 'rgba(212, 165, 116, 0.1)', borderRadius: '4px' }}>{error}</div>}
 
+        <div style={{ padding: '16px' }}>
           <SearchBar onSearch={handleSearch} onClear={handleClearSearch} placeholder="Search collections by name or description..." />
+        </div>
 
-          {filteredCollections.length === 0 ? (
-            <Typography variant="body1" sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
-              {collections.length === 0 ? 'No collections yet.' : 'No collections match your search.'}
-            </Typography>
-          ) : (
-            <>
-              <TableContainer component={Paper}>
-                <Table size="small">
-                  <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Created</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }} align="right">Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {paginatedData.map((collection) => (
-                      <TableRow key={collection.id} hover>
-                        <TableCell sx={{ maxWidth: 150 }}>{truncateText(collection.name, 40)}</TableCell>
-                        <TableCell sx={{ maxWidth: 200 }}>{truncateText(collection.description, 50)}</TableCell>
-                        <TableCell>{formatDate(collection.createdAt)}</TableCell>
-                        <TableCell align="right">
-                          <Stack direction="row" spacing={1} justifyContent="flex-end">
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              startIcon={<EditIcon />}
-                              onClick={() => handleEditClick(collection)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              color="error"
-                              startIcon={<DeleteIcon />}
-                              onClick={() => handleDeleteClick(collection.id)}
-                            >
-                              Delete
-                            </Button>
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                />
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+        {filteredCollections.length === 0 ? (
+          <div className="collections-empty-state">
+            {collections.length === 0 ? 'No collections yet.' : 'No collections match your search.'}
+          </div>
+        ) : (
+          <>
+            <table className="collections-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedData.map((collection) => (
+                  <tr key={collection.id}>
+                    <td>{truncateText(collection.name, 40)}</td>
+                    <td>{truncateText(collection.description, 50)}</td>
+                    <td>{formatDate(collection.createdAt)}</td>
+                    <td>
+                      <div className="collections-table-actions">
+                        <button className="collections-edit-button" onClick={() => handleEditClick(collection)}>
+                          <EditIcon style={{ marginRight: '4px', fontSize: '14px' }} />
+                          Edit
+                        </button>
+                        <button className="collections-delete-button" onClick={() => handleDeleteClick(collection.id)}>
+                          <DeleteIcon style={{ marginRight: '4px', fontSize: '14px' }} />
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
+          </>
+        )}
+      </div>
 
       {/* Add/Edit Modal */}
       <Modal
@@ -322,7 +290,7 @@ const CollectionsTable: FC = () => {
         onClose={() => setOpenModal(false)}
         size="medium"
       >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <FormInput
             name="name"
             label="Collection Name"
@@ -344,22 +312,24 @@ const CollectionsTable: FC = () => {
             helperText={formErrors.description}
           />
           <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button
-              variant="outlined"
-              onClick={() => setOpenModal(false)}
+            <button 
+              className="collections-edit-button" 
+              onClick={() => setOpenModal(false)} 
               disabled={submitting}
+              style={{ cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.6 : 1 }}
             >
               Cancel
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleFormSubmit}
+            </button>
+            <button 
+              className="collections-add-button" 
+              onClick={handleFormSubmit} 
               disabled={submitting}
+              style={{ cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.6 : 1 }}
             >
               {submitting ? 'Saving...' : modalMode === 'add' ? 'Create' : 'Update'}
-            </Button>
+            </button>
           </Stack>
-        </Box>
+        </div>
       </Modal>
 
       {/* Delete Confirmation Dialog */}
@@ -377,7 +347,7 @@ const CollectionsTable: FC = () => {
         isLoading={deleting}
         isDangerous={true}
       />
-    </Container>
+    </div>
   );
 };
 

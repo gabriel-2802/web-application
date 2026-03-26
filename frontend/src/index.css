@@ -1,13 +1,130 @@
-body {
+/* Dark Academia Theme */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lora:wght@400;500;600&family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Deep, atmospheric backgrounds */
+  --bg-dark: #131119;
+  --bg-dark-secondary: #1a1724;
+  --bg-dark-tertiary: #24202c;
+  --bg-card: #1f1b27;
+  
+  /* Pale dark purple accents - muted mauve/amethyst */
+  --accent-primary: #8b7ba3;
+  --accent-light: #a89fb8;
+  --accent-lighter: #b8afc8;
+  --accent-dark: #6f6987;
+  
+  /* Text colors - warm off-white/parchment */
+  --text-primary: #f5f1e8;
+  --text-secondary: #e0dbd0;
+  --text-muted: #b8b3a8;
+  
+  /* Secondary accents - muted gold/sepia */
+  --accent-gold: #c9a87a;
+  --accent-gold-light: #dab896;
+  --accent-gold-dark: #b8956a;
+  
+  /* Utility colors */
+  --border-color: #3a362f;
+  --border-light: #4a4640;
+  --shadow-dark: rgba(0, 0, 0, 0.4);
+  --shadow-light: rgba(139, 123, 163, 0.15);
+  
+  /* Fonts */
+  --font-serif-heading: 'Playfair Display', 'Cormorant Garamond', serif;
+  --font-serif-body: 'Lora', 'Cormorant Garamond', serif;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  
+  /* Border radius (minimal, sharp) */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  
+  /* Transitions */
+  --transition-slow: 300ms ease-in-out;
+  --transition-slower: 400ms ease-in-out;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-serif-body);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.3px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif-heading);
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  margin: var(--spacing-md) 0;
+  color: var(--text-primary);
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+}
+
+h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+}
+
+p {
+  margin: var(--spacing-md) 0;
+  line-height: 1.7;
+}
+
+a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: color var(--transition-slow);
+}
+
+a:hover {
+  color: var(--accent-light);
+  text-decoration: underline;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'Courier New', monospace;
+  background-color: var(--bg-dark-tertiary);
+  color: var(--accent-gold);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
 }

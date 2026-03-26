@@ -1,65 +1,159 @@
 .sidebar {
-    flex: 3;
-    height: fit-content;
-    margin: 20px;
-    padding-bottom: 30px;
-    background-color: black;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #b1aeae;
+  flex: 1;
+  max-width: 500px;
+  height: fit-content;
+  margin: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-md);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-secondary);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.sidebarItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.sidebarTitle {
+  margin: var(--spacing-sm) 0;
+  padding: var(--spacing-sm) 0;
+  width: 100%;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+  font-family: var(--font-serif-heading);
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  line-height: 1.6;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+.sidebarItem > img {
+  margin-top: var(--spacing-md);
+  width: 220px;
+  height: 220px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-slow);
+}
+
+.sidebarItem > img:hover {
+  box-shadow: 0 8px 20px rgba(139, 123, 163, 0.25);
+  border-color: var(--accent-primary);
+}
+
+.sidebarItem > p {
+  padding: var(--spacing-md) var(--spacing-sm);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-align: center;
+  font-style: italic;
+  letter-spacing: 0.3px;
+}
+
+.sidebarList {
+  list-style-type: none;
+  margin: var(--spacing-sm) 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.sidebarListItem {
+  width: 100%;
+  margin: 0;
+  cursor: pointer;
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: center;
+  font-family: var(--font-serif-body);
+  color: var(--accent-gold);
+  transition: all var(--transition-slow);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.8px;
+}
+
+.sidebarListItem:hover {
+  background-color: rgba(139, 123, 163, 0.12);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.sidebarSocial {
+  margin-top: var(--spacing-md);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+}
+
+.sidebarIcon {
+  font-size: 1.2rem;
+  color: var(--accent-gold);
+  cursor: pointer;
+  transition: all var(--transition-slow);
+}
+
+.sidebarIcon:hover {
+  color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    flex: none;
+    margin: var(--spacing-md) 0;
+    padding: var(--spacing-md);
   }
-  
-  .sidebarItem {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .sidebarTitle {
-    margin: 10px;
-    padding: 5px;
-    width: 80%;
-    border-top: solid 1px white;
-    border-bottom: solid 1px white;
-    text-align: center;
-    font-family: "Varela Round", sans-serif;
-    font-size: 12px;
-    line-height: 19px;
-    font-weight: 600;
-  }
-  
+
   .sidebarItem > img {
-    margin-top: 15px;
-    width: 250px;
-    height: 250px;
+    width: 180px;
+    height: 180px;
   }
-  
+
   .sidebarItem > p {
-    padding: 30px;
+    padding: var(--spacing-md) var(--spacing-sm);
+    font-size: 0.9rem;
   }
-  
+
   .sidebarList {
-    list-style-type: none;
-    margin-bottom: 30px;
+    gap: var(--spacing-sm);
   }
-  
+
   .sidebarListItem {
-    width: 50%;
-    margin-top: 15px;
-    cursor: pointer;
+    padding: var(--spacing-sm);
+    font-size: 0.75rem;
   }
-  
-  .sidebarSocial {
-    margin-top: 15px;
-    width: 250px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    margin: var(--spacing-sm) 0;
+    padding: var(--spacing-md);
   }
-  
-  .sidebarIcon {
-    font-size: 16px;
-    margin-left: 10px;
+
+  .sidebarItem > img {
+    width: 150px;
+    height: 150px;
   }
+
+  .sidebarItem > p {
+    font-size: 0.85rem;
+  }
+}

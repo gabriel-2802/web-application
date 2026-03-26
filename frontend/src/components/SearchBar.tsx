@@ -36,21 +36,58 @@ const SearchBar: FC<SearchBarProps> = ({
   };
 
   return (
-    <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+    <Box sx={{ display: 'flex', gap: 1, mb: 2, alignItems: 'center', flexWrap: 'nowrap' }}>
       <TextField
         placeholder={placeholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyPress={handleKeyPress}
         size="small"
-        sx={{ flex: 1, minWidth: 200 }}
+        sx={{ 
+          flex: 1, 
+          minWidth: 200,
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            color: '#e0e0e0',
+            '& fieldset': {
+              borderColor: 'rgba(139, 123, 163, 0.3)',
+            },
+            '&:hover fieldset': {
+              borderColor: 'rgba(139, 123, 163, 0.5)',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: 'rgb(139, 123, 163)',
+            },
+          },
+          '& .MuiOutlinedInput-input': {
+            color: '#e0e0e0',
+            '&::placeholder': {
+              color: 'rgba(224, 224, 224, 0.5)',
+              opacity: 1,
+            },
+          },
+        }}
         disabled={isLoading}
       />
       <Button
         onClick={handleSearch}
-        variant="contained"
+        variant="outlined"
         startIcon={isLoading ? <CircularProgress size={20} /> : <SearchIcon />}
         disabled={isLoading || !query.trim()}
+        sx={{ 
+          borderColor: 'rgb(139, 123, 163)',
+          color: '#f5f1e8',
+          flexShrink: 0,
+          textTransform: 'uppercase',
+          fontSize: '0.85rem',
+          fontWeight: 600,
+          letterSpacing: '0.5px',
+          '&:hover': {
+            backgroundColor: 'rgba(139, 123, 163, 0.12)',
+            borderColor: '#a89fb8',
+            color: '#a89fb8',
+          }
+        }}
       >
         Search
       </Button>
@@ -59,6 +96,20 @@ const SearchBar: FC<SearchBarProps> = ({
         variant="outlined"
         startIcon={<ClearIcon />}
         disabled={isLoading || !query}
+        sx={{ 
+          borderColor: 'rgba(139, 123, 163, 0.5)',
+          color: '#f5f1e8',
+          flexShrink: 0,
+          textTransform: 'uppercase',
+          fontSize: '0.85rem',
+          fontWeight: 600,
+          letterSpacing: '0.5px',
+          '&:hover': {
+            backgroundColor: 'rgba(139, 123, 163, 0.12)',
+            borderColor: 'rgb(139, 123, 163)',
+            color: '#a89fb8',
+          }
+        }}
       >
         Clear
       </Button>

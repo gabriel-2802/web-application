@@ -186,15 +186,23 @@ const Profile: FC = () => {
             </button>
           </div>
 
-          {/* Posts Count */}
-          <div className="profileField">
-            <label>Posts: {userPosts?.length || 0}</label>
+          {/* Section Divider */}
+          <div className="profileDivider"></div>
+
+          {/* Stats Section */}
+          <div className="profileStats">
+            <div className="profileStat">
+              <label>Posts</label>
+              <span className="statValue">{userPosts?.length || 0}</span>
+            </div>
+            <div className="profileStat">
+              <label>Collections</label>
+              <span className="statValue">{userCollections?.length || 0}</span>
+            </div>
           </div>
 
-          {/* Collections Count */}
-          <div className="profileField">
-            <label>Collections: {userCollections?.length || 0}</label>
-          </div>
+          {/* Section Divider */}
+          <div className="profileDivider"></div>
 
           {/* Delete Account */}
           <button
@@ -216,6 +224,7 @@ const Profile: FC = () => {
     <div className="profile">
       <div className="profileWrapper">
         <h2>My Profile</h2>
+        
         <div className="profilePP">
           <img
             src={user?.profilePicture || ProfileImage}
@@ -223,8 +232,19 @@ const Profile: FC = () => {
             alt="profile"
           />
         </div>
-        <label>Username: {user?.username}</label>
-        <label>Email: {user?.email}</label>
+
+        <div className="profileField">
+          <label>Username:</label>
+          <span>{user?.username}</span>
+        </div>
+
+        <div className="profileField">
+          <label>Email:</label>
+          <span>{user?.email}</span>
+        </div>
+
+        <div className="profileDivider"></div>
+
         <button
           className="profileDeleteButton"
           onClick={deleteClick}
