@@ -8,6 +8,15 @@
   justify-content: center;
 }
 
+.postsFilterLabelContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--spacing-2xl);
+  flex-basis: 100%;
+}
+
 .postsFilterLabel {
   position: relative;
   width: 100%;
@@ -16,10 +25,9 @@
   font-family: var(--font-serif-heading);
   font-size: 1.5rem;
   font-weight: 600;
-  margin: 0 0 var(--spacing-2xl) 0;
+  margin: 0 0 var(--spacing-md) 0;
   display: flex;
   justify-content: center;
-  flex-basis: 100%;
   letter-spacing: 0.8px;
 }
 
@@ -28,6 +36,19 @@
   content: '·';
   margin: 0 var(--spacing-md);
   opacity: 0.6;
+}
+
+.postsFilterDescription {
+  width: 100%;
+  text-align: center;
+  color: var(--text-secondary);
+  font-family: var(--font-serif-body);
+  font-size: 1rem;
+  margin: 0;
+  padding: 0 var(--spacing-lg);
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+  max-width: 600px;
 }
 
 .noPostsMessage {
@@ -49,6 +70,10 @@
     margin: var(--spacing-md);
     gap: var(--spacing-md);
   }
+
+  .postsFilterDescription {
+    font-size: 0.95rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -58,6 +83,11 @@
 
   .postsFilterLabel {
     font-size: 1.2rem;
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .postsFilterDescription {
+    font-size: 0.9rem;
+    padding: 0 var(--spacing-md);
   }
 }

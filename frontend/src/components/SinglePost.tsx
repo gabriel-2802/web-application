@@ -52,7 +52,7 @@ const SinglePost: FC = () => {
   return (
     <div className="singlePost">
       <div className="singlePostWrapper">
-        <img src={Image} alt="" className="singlePostImg" />
+        <img src={post?.imageUrl || Image} alt="" className="singlePostImg" />
         <h1 className="singlePostTitle">
           {post?.title}
           {isWriter(user) && (

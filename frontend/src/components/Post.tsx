@@ -33,7 +33,7 @@ const Post: FC<PostProps> = ({ post }) => {
 
   return (
     <div className="post">
-      <img src={Image} alt="" className="postImg" />
+      <img src={post.imageUrl || Image} alt="" className="postImg" />
       <div className="postInfo">
         <Link to={`/post/${post.id}`} className="postLink">
           <span className="postTitle">{post.title}</span>

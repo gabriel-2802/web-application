@@ -17,7 +17,6 @@ import { FC } from 'react';
 
 const App: FC = () => {
   const { user } = useContext(LoginContext);
-  console.log(user);
 
   // Protected route component for writer-only pages
   const WriterRoute: FC<{ element: React.ReactElement }> = ({ element }) => {

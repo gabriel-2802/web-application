@@ -36,6 +36,9 @@ const Navbar: FC = () => {
       </div>
       <div className="topCenter">
         <ul className="topList">
+          <Link to="/" className="homeLink">
+            <li className="topListItem">Home</li>
+          </Link>
           {isWriter(user) && (
             <>
               <Link to="/write" className="homeLink">
@@ -49,15 +52,15 @@ const Navbar: FC = () => {
               </Link>
             </>
           )}
-          <Link to="/" className="homeLink">
-            <li className="topListItem">Home</li>
-          </Link>
-          <Link to="/login" className="homeLink">
-            <li className="topListItem">{!user ? 'Login' : ''}</li>
-          </Link>
-          <Link to="/" className="homeLink" onClick={handleLogout}>
-            <li className="topListItem">{user && 'Logout'}</li>
-          </Link>
+          {!user ? (
+            <Link to="/login" className="homeLink">
+              <li className="topListItem">Login</li>
+            </Link>
+          ) : (
+            <Link to="/" className="homeLink" onClick={handleLogout}>
+              <li className="topListItem">Logout</li>
+            </Link>
+          )}
         </ul>
       </div>
       <div className="topRight">

@@ -74,6 +74,13 @@ export const COLLECTION_ENDPOINTS = {
 } as const;
 
 // ============================================================================
+// File Upload Endpoints
+// ============================================================================
+export const FILE_ENDPOINTS = {
+  UPLOAD_IMAGE: `${BASE_URL}/api/files/upload-image`,
+} as const;
+
+// ============================================================================
 // Comment Endpoints
 // ============================================================================
 export const COMMENT_ENDPOINTS = {
