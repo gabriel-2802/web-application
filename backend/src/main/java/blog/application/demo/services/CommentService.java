@@ -173,11 +173,6 @@ public class CommentService extends AbstractService {
 
     /**
      * Deletes a comment (only the author can delete)
-     * 
-     * When a comment is deleted, its child comments are promoted:
-     * - If the deleted comment is top-level (parent = NULL), children become top-level
-     * - If the deleted comment is a reply, children become replies to the deleted comment's parent
-     * 
      * @param commentId the comment ID
      * @return ResponseEntity with the deleted comment response
      * @throws ResourceNotFoundException if comment not found

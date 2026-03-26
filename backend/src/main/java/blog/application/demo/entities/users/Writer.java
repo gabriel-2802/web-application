@@ -17,9 +17,6 @@ public class Writer extends AbstractUser {
     private String bio;
     
     @Column(length = 1000)
-    private String profileImageUrl;
-    
-    @Column(length = 1000)
     private String websiteUrl;
     
     @Column(length = 500)
@@ -51,15 +48,6 @@ public class Writer extends AbstractUser {
         this.bio = bio;
     }
 
-    @Override
-    public String getProfileImageUrl() {
-        return profileImageUrl;
-    }
-
-    @Override
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
-    }
 
     @Override
     public String getWebsiteUrl() {

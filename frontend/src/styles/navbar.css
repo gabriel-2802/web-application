@@ -143,6 +143,34 @@
   background-color: rgba(139, 123, 163, 0.12);
 }
 
+.feedbackButton {
+  height: 36px;
+  width: 36px;
+  padding: 0;
+  margin: 0;
+  border: 1.5px solid var(--accent-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--accent-primary);
+  transition: all var(--transition-slow);
+  border-radius: var(--radius-md);
+  font-size: 20px;
+}
+
+.feedbackButton:hover {
+  color: var(--accent-light);
+  border-color: var(--accent-light);
+  background-color: rgba(139, 123, 163, 0.12);
+  transform: scale(1.05);
+}
+
+.feedbackButton:active {
+  transform: scale(0.98);
+}
+
 .searchForm {
   display: flex;
   align-items: center;

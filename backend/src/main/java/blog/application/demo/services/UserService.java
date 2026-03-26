@@ -272,13 +272,13 @@ public class UserService extends AbstractService {
             throw new ResourceNotFoundException("User with id: " + writerId + " is not a writer");
         }
         
-        // Get all posts by this writer
+        // get all posts by this writer
         List<PostResponse> posts = postRepository.findAll().stream()
                 .filter(post -> post.getAuthor().getId().equals(writerId))
                 .map(postMapper::toResponse)
                 .collect(Collectors.toList());
         
-        // Get all collections owned by this writer
+        // get all collections owned by this writer
         List<CollectionResponse> collections = collectionRepository.findAll().stream()
                 .filter(collection -> collection.getOwner().getId().equals(writerId))
                 .map(collectionMapper::toResponse)
@@ -343,17 +343,17 @@ public class UserService extends AbstractService {
         AbstractUser currentUser = getCurrentUser();
         Long userId = currentUser.getId();
         
-        // Find all comments authored by this user and intelligently promote their replies
+        // find all comments authored by this user and intelligently promote their replies
         List<Comment> userComments = commentRepository.findByAuthorId(userId);
         
         for (Comment comment : userComments) {
-            // Get the parent of the comment being deleted (could be null if top-level)
+            // get the parent of the comment being deleted (could be null if top-level)
             Comment parentOfDeleted = comment.getParent();
             
-            // Find all direct replies to this comment
+            // find all direct replies to this comment
             List<Comment> childComments = commentRepository.findRepliesByParentCommentId(comment.getId());
             
-            // Promote all child comments to parent's level
+            // promote all child comments to parent's level
             for (Comment child : childComments) {
                 child.setParent(parentOfDeleted);
                 child.setUpdatedAt(LocalDateTime.now());

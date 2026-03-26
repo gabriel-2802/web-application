@@ -19,13 +19,14 @@ public class Feedback {
     private Long id;
     
     @Column(nullable = false)
-    private String rating; // Radio button: EXCELLENT, GOOD, AVERAGE, POOR
+    @Enumerated(EnumType.STRING)
+    private Rating rating;
     
     @Column(nullable = false)
-    private boolean wouldRecommend; // Checkbox
+    private boolean wouldRecommend;
     
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String feedbackText; // Text box
+    private String feedbackText;
     
     @Column(nullable = false, updatable = false)
     private LocalDateTime submittedAt;

@@ -11,11 +11,14 @@ public class FlywayConfig {
 
     @Bean(initMethod = "migrate")
     public Flyway flyway(DataSource dataSource) {
-        return Flyway.configure()
+        Flyway flyway = Flyway.configure()
                 .dataSource(dataSource)
                 .locations("classpath:db/migration")
                 .validateOnMigrate(true)
                 .cleanDisabled(true)
                 .load();
+
+        flyway.repair();
+        return flyway;
     }
 }

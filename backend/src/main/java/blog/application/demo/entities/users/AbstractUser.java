@@ -40,6 +40,9 @@ public abstract class AbstractUser implements UserDetails {
     @Column(name = "verification_token_expiry")
     private LocalDateTime verificationTokenExpiry;
 
+    @Column(length = 1000)
+    private String profileImageUrl;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -67,75 +70,24 @@ public abstract class AbstractUser implements UserDetails {
         authorities = role;
     }
 
-    /**
-     * Get user type identifier
-     * @return "WRITER" for writers, "VIEWER" for viewers
-     */
     public abstract String getUserType();
 
-    /**
-     * Get user's bio
-     * @return bio text or null if not applicable
-     */
     public abstract String getBio();
 
-    /**
-     * Set user's bio
-     * @param bio the bio text
-     */
     public abstract void setBio(String bio);
 
-    /**
-     * Check if user can update bio (writers only)
-     * @return true if user can update bio, false otherwise
-     */
     public abstract boolean canUpdateBio();
 
-    /**
-     * Get profile image URL
-     * @return profile image URL or null
-     */
-    public abstract String getProfileImageUrl();
 
-    /**
-     * Set profile image URL
-     * @param profileImageUrl the profile image URL
-     */
-    public abstract void setProfileImageUrl(String profileImageUrl);
-
-    /**
-     * Get website URL (writers only)
-     * @return website URL or null
-     */
     public abstract String getWebsiteUrl();
 
-    /**
-     * Set website URL
-     * @param websiteUrl the website URL
-     */
     public abstract void setWebsiteUrl(String websiteUrl);
 
-    /**
-     * Get location (writers only)
-     * @return location or null
-     */
     public abstract String getLocation();
 
-    /**
-     * Set location
-     * @param location the location
-     */
     public abstract void setLocation(String location);
 
-    /**
-     * Get professional title (writers only)
-     * @return professional title or null
-     */
     public abstract String getProfessionalTitle();
 
-    /**
-     * Set professional title
-     * @param professionalTitle the professional title
-     */
     public abstract void setProfessionalTitle(String professionalTitle);
 }

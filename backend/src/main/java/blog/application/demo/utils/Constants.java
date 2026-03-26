@@ -26,10 +26,7 @@ public class Constants {
     public static final String USER = "USER";
     
     private SecretKey secretKey;
-    
-    /**
-     * Lazily initializes and returns the SecretKey for JWT signing
-     */
+
     public SecretKey getKey() {
         if (secretKey == null && jwtSecret != null) {
             secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));

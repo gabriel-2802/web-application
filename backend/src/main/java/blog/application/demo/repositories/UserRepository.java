@@ -16,10 +16,6 @@ public interface UserRepository extends JpaRepository<AbstractUser, Long> {
 
     Optional<AbstractUser> findByVerificationToken(String verificationToken);
 
-    /**
-     * Count the number of writers in the system
-     * @return Number of writers
-     */
     @Query("SELECT COUNT(w) FROM Writer w")
     long countWriters();
 }

@@ -51,14 +51,12 @@ public class PostService extends AbstractService{
                     .orElseThrow(() -> new ResourceNotFoundException("Post collection not found with id: " + postDto.collectionId()));
         }
 
-        // Create new post entity with all relationships
         Post post = postMapper.toEntity(postDto, author);
         post.setAuthor(author);
         if (collection != null) {
             post.setCollection(collection);
         }
 
-        // Save only the Post - Hibernate handles the relationships
         Post savedPost = postRepository.save(post);
         PostResponse responseDto = postMapper.toResponse(savedPost);
 

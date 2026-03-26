@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Service for collection management
+ */
 @Service
 @Transactional
 public class CollectionService extends AbstractService{

@@ -60,17 +60,17 @@ public class AuthService {
         }
 
         AbstractUser user = userMapper.toEntity(registerRequest, constants.ADMIN_REGISTER_CODE);
+        user.setPassword(passwordEncoder.encode(registerRequest.password()));
 
-        // Check if attempting to create a writer when one already exists
-        if (user instanceof blog.application.demo.entities.users.Writer) {
+        // check if attempting to create a writer when one already exists
+        if ("WRITER".equals(user.getUserType())) {
             if (userRepository.countWriters() > 0) {
                 throw new WriterAlreadyExistsException("Only one writer account is allowed in the system. A writer already exists.");
             }
         }
 
-        user.setPassword(passwordEncoder.encode(registerRequest.password()));
 
-        // Generate verification token
+        // generate verification token
         String verificationToken = TokenGenerator.generateVerificationToken();
         user.setVerificationToken(verificationToken);
         user.setVerificationTokenExpiry(LocalDateTime.now().plusSeconds(verificationTokenExpiration / 1000));
@@ -95,7 +95,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        // Send verification email - MUST succeed for registration to complete
+        // send verification email, MUST succeed for registration to complete
         emailService.sendVerificationEmail(user.getEmail(), verificationToken, user.getUsername());
     }
 
@@ -113,11 +113,7 @@ public class AuthService {
         return new AuthResponse(jwt);
     }
 
-    /**
-     * Verify user's email using verification token
-     * @param token the verification token
-     * @throws InvalidVerificationTokenException if token is invalid or expired
-     */
+
     @Transactional
     public void verifyEmail(String token) throws InvalidVerificationTokenException {
         AbstractUser user = userRepository.findByVerificationToken(token)
@@ -132,8 +128,6 @@ public class AuthService {
         user.setVerificationTokenExpiry(null);
 
         userRepository.save(user);
-
-        // Send welcome email - MUST succeed for verification to complete
         emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
     }
 }

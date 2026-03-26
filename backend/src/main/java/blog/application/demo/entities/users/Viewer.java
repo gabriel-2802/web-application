@@ -10,8 +10,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Viewer extends AbstractUser {
-    @Column(length = 1000)
-    private String profileImageUrl;
 
     @Override
     public String getUserType() {
@@ -33,15 +31,6 @@ public class Viewer extends AbstractUser {
         return false;
     }
 
-    @Override
-    public String getProfileImageUrl() {
-        return profileImageUrl;
-    }
-
-    @Override
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
-    }
 
     @Override
     public String getWebsiteUrl() {
