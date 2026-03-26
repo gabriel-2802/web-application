@@ -1,0 +1,5 @@
+
+ALTER TABLE feedback ALTER COLUMN rating TYPE VARCHAR(50);
+
+DROP TYPE IF EXISTS feedback_rating;
+

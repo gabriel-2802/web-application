@@ -18,9 +18,8 @@ public class Feedback {
     @Column(name = "feedback_id")
     private Long id;
     
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Rating rating;
+    @Column(nullable = false, length = 50)
+    private String rating;
     
     @Column(nullable = false)
     private boolean wouldRecommend;
@@ -36,3 +35,5 @@ public class Feedback {
         submittedAt = LocalDateTime.now();
     }
 }
+
+

@@ -5,6 +5,43 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { COLLECTION_ENDPOINTS, USER_ENDPOINTS } from "../constants/api";
 
+interface WriterProfile {
+	id: number;
+	username: string;
+	email: string;
+	userType: string;
+	bio: string;
+	profileImageUrl: string;
+	websiteUrl: string;
+	location: string;
+	professionalTitle: string;
+	createdAt: string;
+	updatedAt: string;
+	roles: string[];
+	posts: Array<{
+		id: number;
+		title: string;
+		content: string;
+		imageUrl: string;
+		createdAt: string;
+		updatedAt: string;
+		authorId: number;
+		authorUsername: string;
+		collectionId: number;
+		comments: Array<any>;
+	}>;
+	collections: Array<{
+		id: number;
+		name: string;
+		description: string;
+		owner: string;
+		ownerId: string;
+		pinned: boolean;
+		createdAt: string;
+		posts: Array<any>;
+	}>;
+}
+
 interface Collection {
 	id: number;
 	name: string;
@@ -12,22 +49,19 @@ interface Collection {
 }
 
 const Sidebar: FC = () => {
-	const [bio, setBio] = useState<string>("");
+	const [writerProfile, setWriterProfile] = useState<WriterProfile | null>(null);
 	const [collections, setCollections] = useState<Collection[]>([]);
 
 	useEffect(() => {
-		const fetchBio = async () => {
+		const fetchWriterProfile = async () => {
 			try {
-				const res = await axios.get(USER_ENDPOINTS.GET_WRITER_BIO);
-				setBio(res.data);
+				const res = await axios.get(USER_ENDPOINTS.GET_CURRENT_WRITER);
+				setWriterProfile(res.data);
 			} catch (error) {
-				console.error("Failed to fetch writer bio:", error);
-				setBio(
-					"Welcome to the blog. Discover amazing stories and content from talented writers.",
-				);
+				console.error("Failed to fetch writer profile:", error);
 			}
 		};
-		fetchBio();
+		fetchWriterProfile();
 	}, []);
 
 	useEffect(() => {
@@ -46,8 +80,36 @@ const Sidebar: FC = () => {
 		<div className="sidebar">
 			<div className="sidebarItem">
 				<span className="sidebarTitle">About me</span>
-				<img src={Image} alt="" />
-				<p>{bio}</p>
+				{writerProfile?.professionalTitle && (
+					<p className="writerInfo writerTitle">
+						{writerProfile.professionalTitle}
+					</p>
+				)}
+				{writerProfile?.location && (
+					<p className="writerInfo">{writerProfile.location}</p>
+				)}
+				{writerProfile?.websiteUrl && (
+					<p className="writerInfo">
+						<a
+							href={writerProfile.websiteUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							{writerProfile.websiteUrl.length > 30 
+								? writerProfile.websiteUrl.substring(0, 27) + '...' 
+								: writerProfile.websiteUrl}
+						</a>
+					</p>
+				)}
+				<img
+					src={
+						writerProfile?.profileImageUrl
+							? writerProfile.profileImageUrl
+							: Image
+					}
+					alt="Writer profile"
+				/>
+				<p className="writerBio">{writerProfile?.bio || "Welcome to the blog."}</p>
 			</div>
 			<div className="sidebarItem">
 				<span className="sidebarTitle">Collections</span>

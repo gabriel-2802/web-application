@@ -1,6 +1,5 @@
 import { FC, useState } from "react";
 import "../styles/navbar.css";
-import GitHubIcon from "@mui/icons-material/GitHub";
 import SearchIcon from "@mui/icons-material/Search";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
@@ -33,9 +32,6 @@ const Navbar: FC = () => {
 		<>
 			<div className="top">
 				<div className="topLeft">
-					<a href="https://github.com/gabriel-2802">
-						<GitHubIcon />
-					</a>
 					<span className="logo">Gabriel's Blog</span>
 				</div>
 				<div className="topCenter">

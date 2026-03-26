@@ -56,6 +56,7 @@ public class UserController {
     }
 
     @GetMapping("/writer-profile")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<WriterProfileResponse> getMyWriterProfile() {
         return userService.getMyWriterProfile();
     }

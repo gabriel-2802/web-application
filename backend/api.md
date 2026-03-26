@@ -470,10 +470,11 @@ This document provides comprehensive documentation for all API endpoints in the 
 
 ---
 
-### 7. Get Current Writer Profile
+### 7. Get Writer Profile (Public)
 - **Endpoint:** `GET /api/users/writer-profile`
-- **Authentication Required:** Yes (JWT Token)
-- **Role Required:** Authenticated user (but only writers can access)
+- **Authentication Required:** No
+- **Role Required:** None
+- **Description:** Retrieves the profile of the single writer in the system along with all their posts and collections. This is a public endpoint accessible to anyone.
 - **Request Body:** None
 - **Response Body (Success - 200):**
   ```json
@@ -519,7 +520,7 @@ This document provides comprehensive documentation for all API endpoints in the 
   }
   ```
 - **Response Body (Error):**
-  - `401 Unauthorized`: If current user is not a writer (UnauthorizedException)
+  - `404 Not Found`: If no writer exists in the system (ResourceNotFoundException)
 
 ---
 
@@ -1226,7 +1227,7 @@ This document provides comprehensive documentation for all API endpoints in the 
 | **User** | `/api/users/professional-title` | PUT | Yes | WRITER only |
 | **User** | `/api/users/writer/bio` | GET | No | None |
 | **User** | `/api/users/writers/{writerId}/profile` | GET | No | None |
-| **User** | `/api/users/writer-profile` | GET | Yes | WRITER only |
+| **User** | `/api/users/writer-profile` | GET | No | None |
 | **User** | `/api/users/account` | DELETE | Yes | Any |
 | **Comment** | `/api/comments/create` | POST | Yes | ROLE_VIEWER, ROLE_WRITER |
 | **Comment** | `/api/comments/{id}` | GET | No | None |

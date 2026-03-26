@@ -364,3 +364,85 @@ textarea::placeholder {
     height: 36px;
   }
 }
+
+/* Password Form Container */
+.passwordFormContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background-color: var(--bg-dark-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.passwordFormContainer input {
+  width: 100%;
+  padding: var(--spacing-md);
+  background-color: var(--bg-dark-tertiary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-serif-body);
+  transition: all var(--transition-slow);
+}
+
+.passwordFormContainer input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 8px rgba(139, 123, 163, 0.2);
+  outline: none;
+}
+
+/* Cancel Button */
+.profileCancelButton {
+  background: transparent;
+  border: 1.5px solid var(--border-light);
+  color: var(--text-secondary);
+  font-weight: 700;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-slow);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-serif-body);
+}
+
+.profileCancelButton:hover {
+  background: rgba(139, 123, 163, 0.08);
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+  box-shadow: 0 4px 12px rgba(139, 123, 163, 0.1);
+}
+
+/* Button State Styles */
+.profileSaveButton.success {
+  background: rgba(76, 175, 80, 0.15);
+  border-color: #4caf50;
+  color: #4caf50;
+}
+
+.profileSaveButton.success:hover {
+  background: rgba(76, 175, 80, 0.25);
+  border-color: #66bb6a;
+  color: #66bb6a;
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.2);
+}
+
+.profileSaveButton.error {
+  background: rgba(244, 67, 54, 0.15);
+  border-color: #f44336;
+  color: #f44336;
+}
+
+.profileSaveButton.error:hover {
+  background: rgba(244, 67, 54, 0.25);
+  border-color: #ef5350;
+  color: #ef5350;
+  box-shadow: 0 6px 16px rgba(244, 67, 54, 0.2);
+}
