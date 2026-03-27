@@ -157,7 +157,6 @@ const CollectionsTable: FC = () => {
 	) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
-		// Clear error for this field as user types
 		if (formErrors[name as keyof FormData]) {
 			setFormErrors((prev) => ({ ...prev, [name]: undefined }));
 		}
@@ -445,7 +444,6 @@ const CollectionsTable: FC = () => {
 				</div>
 			</Modal>
 
-			{/* Delete Confirmation Dialog */}
 			<ConfirmDialog
 				open={deleteConfirmOpen}
 				title="Delete Collection"

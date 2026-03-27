@@ -15,7 +15,7 @@ const VerifyEmail: FC = () => {
 	const location = useLocation();
 	const email = location.state?.email || "";
 
-	// Extract token from URL on component mount
+	// extract token from URL on component mount
 	useEffect(() => {
 		const tokenFromUrl = searchParams.get("token");
 		if (tokenFromUrl) {
@@ -36,7 +36,7 @@ const VerifyEmail: FC = () => {
 		setError(false);
 
 		try {
-			// Call the verify email endpoint with the token
+			// call the verify email endpoint with the token
 			await axios.get(AUTH_ENDPOINTS.VERIFY_EMAIL, {
 				params: { token },
 			});
@@ -44,7 +44,7 @@ const VerifyEmail: FC = () => {
 			setVerified(true);
 			setIsLoading(false);
 
-			// Redirect to login after 2 seconds
+			// redirect to login after 2 seconds
 			setTimeout(() => {
 				nav("/login", { replace: true });
 			}, 2000);

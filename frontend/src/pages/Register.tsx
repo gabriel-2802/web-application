@@ -20,7 +20,7 @@ const Register: FC = () => {
 		setError(false);
 		setIsLoading(true);
 		
-		// Validate passwords match
+		// validate passwords match
 		if (password !== confirmPassword) {
 			setError(true);
 			setErrorText("Passwords do not match");
@@ -35,21 +35,20 @@ const Register: FC = () => {
 				password: password,
 			};
 
-			// Include adminRegisterCode if provided (to register as WRITER)
+			// include adminRegisterCode if provided (to register as WRITER)
 			if (adminRegisterCode.trim()) {
 				payload.adminRegisterCode = parseInt(adminRegisterCode, 10);
 			}
 
 			await axios.post(AUTH_ENDPOINTS.REGISTER, payload);
 
-			// Redirect to email verification page after successful registration
+			// redirect to email verification page after successful registration
 			nav("/verify-email", { state: { email: email } });
 		} catch (error: any) {
 			setError(true);
 			const errorData = error.response?.data;
 			let errorMessage = "Registration failed";
 			
-			// Try to extract specific field errors first
 			if (errorData?.fieldErrors && typeof errorData.fieldErrors === "object") {
 				const fieldErrorMessages = [];
 				for (const [field, messages] of Object.entries(errorData.fieldErrors)) {
@@ -63,7 +62,6 @@ const Register: FC = () => {
 					errorMessage = fieldErrorMessages.join(" | ");
 				}
 			}
-			// Fall back to generic error message
 			else if (typeof errorData === "string") {
 				errorMessage = errorData;
 			} else if (errorData?.error) {

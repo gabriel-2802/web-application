@@ -21,7 +21,7 @@ const Home: FC = () => {
 		const fetchPosts = async () => {
 			try {
 				if (searchKeyword) {
-					// Fetch posts by search keyword
+					// posts by search keyword
 					const res = await axios.get(
 						POST_ENDPOINTS.SEARCH(searchKeyword),
 					);
@@ -37,7 +37,7 @@ const Home: FC = () => {
 					);
 					setPosts(filteredPosts);
 
-					// Fetch collection name and description
+					// collection name and description
 					try {
 						const collectionRes = await axios.get(
 							COLLECTION_ENDPOINTS.FIND(collectionId),
@@ -51,7 +51,7 @@ const Home: FC = () => {
 						setFilterDescription("");
 					}
 				} else {
-					// Fetch all posts
+					// all posts
 					const res = await axios.get(POST_ENDPOINTS.ALL);
 					setPosts(res.data);
 					setFilterLabel("");

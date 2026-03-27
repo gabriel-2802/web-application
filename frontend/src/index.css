@@ -1,40 +1,32 @@
-/* Dark Academia Theme */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lora:wght@400;500;600&family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Deep, atmospheric backgrounds */
   --bg-dark: #131119;
   --bg-dark-secondary: #1a1724;
   --bg-dark-tertiary: #24202c;
   --bg-card: #1f1b27;
   
-  /* Pale dark purple accents - muted mauve/amethyst */
   --accent-primary: #8b7ba3;
   --accent-light: #a89fb8;
   --accent-lighter: #b8afc8;
   --accent-dark: #6f6987;
   
-  /* Text colors - warm off-white/parchment */
   --text-primary: #f5f1e8;
   --text-secondary: #e0dbd0;
   --text-muted: #b8b3a8;
   
-  /* Secondary accents - muted gold/sepia */
   --accent-gold: #c9a87a;
   --accent-gold-light: #dab896;
   --accent-gold-dark: #b8956a;
   
-  /* Utility colors */
   --border-color: #3a362f;
   --border-light: #4a4640;
   --shadow-dark: rgba(0, 0, 0, 0.4);
   --shadow-light: rgba(139, 123, 163, 0.15);
   
-  /* Fonts */
   --font-serif-heading: 'Playfair Display', 'Cormorant Garamond', serif;
   --font-serif-body: 'Lora', 'Cormorant Garamond', serif;
   
-  /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -42,11 +34,9 @@
   --spacing-xl: 32px;
   --spacing-2xl: 48px;
   
-  /* Border radius (minimal, sharp) */
   --radius-sm: 2px;
   --radius-md: 4px;
   
-  /* Transitions */
   --transition-slow: 300ms ease-in-out;
   --transition-slower: 400ms ease-in-out;
 }

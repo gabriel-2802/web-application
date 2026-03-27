@@ -17,7 +17,6 @@
   color: var(--accent-light);
 }
 
-/* ==================== BUTTONS ==================== */
 button {
   background-color: transparent;
   border: 1.5px solid var(--accent-primary);
@@ -62,7 +61,6 @@ button.primary:hover {
   background-color: rgba(139, 123, 163, 0.25);
 }
 
-/* ==================== FORM INPUTS ==================== */
 input,
 textarea,
 select {
@@ -92,7 +90,6 @@ select:focus {
   background-color: var(--bg-dark-tertiary);
 }
 
-/* ==================== MODALS/DIALOGS ==================== */
 .modal,
 .dialog {
   background-color: var(--bg-card);
@@ -117,7 +114,6 @@ select:focus {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-/* ==================== TABLES ==================== */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -167,7 +163,6 @@ td:last-child {
   border-right: none;
 }
 
-/* ==================== PAGINATION ==================== */
 .pagination {
   display: flex;
   justify-content: center;
@@ -199,7 +194,6 @@ td:last-child {
   background-color: rgba(139, 123, 163, 0.25);
 }
 
-/* ==================== SEPARATORS ==================== */
 hr {
   border: none;
   border-top: 1px solid var(--border-color);
@@ -216,7 +210,6 @@ hr {
   opacity: 0.6;
 }
 
-/* ==================== SCROLLBAR ==================== */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -235,7 +228,6 @@ hr {
   background: var(--accent-light);
 }
 
-/* ==================== UTILITY CLASSES ==================== */
 .text-muted {
   color: var(--text-muted);
 }

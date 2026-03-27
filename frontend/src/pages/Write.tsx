@@ -42,7 +42,7 @@ const Write: FC = () => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isLoading, setIsLoading] = useState(isEditMode);
 
-	// Collection modal states
+	// collection modal states
 	const [openModal, setOpenModal] = useState(false);
 	const [formData, setFormData] = useState<FormData>({
 		name: "",
@@ -245,7 +245,6 @@ const Write: FC = () => {
 	return (
 		<div className="write">
 			<form className="writeForm" onSubmit={handleSubmit}>
-				{/* ── Image preview ── */}
 				<div className="writeImageWrapper">
 					<img
 						className="writeImg"
@@ -257,7 +256,6 @@ const Write: FC = () => {
 					/>
 				</div>
 
-				{/* ── Title row: upload icon + title input ── */}
 				<div className="writeTitleRow">
 					<label
 						className="writeIcon"
@@ -286,10 +284,8 @@ const Write: FC = () => {
 					/>
 				</div>
 
-				{/* ── Divider ── */}
 				<div className="writeDivider" />
 
-				{/* ── Body textarea ── */}
 				<textarea
 					placeholder="State..."
 					className="writeText"
@@ -297,7 +293,6 @@ const Write: FC = () => {
 					value={text}
 				/>
 
-				{/* ── Collection select ── */}
 				<div
 					style={{
 						display: "flex",
@@ -335,14 +330,12 @@ const Write: FC = () => {
 					</button>
 				</div>
 
-				{/* ── Error ── */}
 				{error && (
 					<div className="writeError">
 						<strong>Error:</strong> {error}
 					</div>
 				)}
 
-				{/* ── Submit ── */}
 				<button
 					className="writeSubmit"
 					type="submit"
@@ -353,7 +346,6 @@ const Write: FC = () => {
 				</button>
 			</form>
 
-			{/* Collection Modal */}
 			<Modal
 				open={openModal}
 				title="Create New Collection"

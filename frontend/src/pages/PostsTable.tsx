@@ -173,7 +173,6 @@ const PostsTable: FC = () => {
 	) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
-		// Clear error for this field as user types
 		if (formErrors[name as keyof FormData]) {
 			setFormErrors((prev) => ({ ...prev, [name]: undefined }));
 		}
@@ -186,7 +185,7 @@ const PostsTable: FC = () => {
 			setSubmitting(true);
 			let finalFormData = { ...formData };
 
-			// Upload image if a file was selected
+			// upload image if a file was selected
 			if (file) {
 				setUploadingImage(true);
 				const imageUrl = await uploadImageFile(file);
@@ -294,7 +293,7 @@ const PostsTable: FC = () => {
 				}
 			}
 
-			// Update local state
+			// update local state
 			setPosts(
 				posts.map((p) =>
 					p.id === postId
@@ -620,7 +619,6 @@ const PostsTable: FC = () => {
 				</div>
 			</Modal>
 
-			{/* Delete Confirmation Dialog */}
 			<ConfirmDialog
 				open={deleteConfirmOpen}
 				title="Delete Post"

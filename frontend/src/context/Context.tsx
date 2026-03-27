@@ -56,7 +56,6 @@ export type LoginAction =
 export const isAdmin = (user: User | null): boolean => {
 	if (!user?.roles) return false;
 	return user.roles.some((role) => {
-		// Handle both string and object formats
 		if (typeof role === "string") {
 			return role === "ROLE_ADMIN" || role === "ADMIN";
 		}

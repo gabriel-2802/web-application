@@ -7,7 +7,6 @@ const Header: FC = () => {
 		<div className="header">
 			<img className="headerImg" src={Image} alt="header" />
 			<div className="headerTitles">
-				<span className="headerTitleSm">Poems and Statements</span>
 				<span className="headerTitleLg">Gabriel's Blog</span>
 			</div>
 		</div>

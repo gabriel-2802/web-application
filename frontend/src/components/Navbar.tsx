@@ -120,7 +120,6 @@ const Navbar: FC = () => {
 				open={feedbackModalOpen}
 				onClose={() => setFeedbackModalOpen(false)}
 				onSuccess={() => {
-					// Optional: Show a toast notification or update UI
 				}}
 			/>
 		</>

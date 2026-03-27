@@ -35,7 +35,6 @@ const Login: FC = () => {
 				});
 
 				const apiUser = userRes.data;
-				// Map profileImageUrl from API to profilePicture for frontend consistency
 				const user = {
 					...apiUser,
 					profilePicture: apiUser.profileImageUrl,

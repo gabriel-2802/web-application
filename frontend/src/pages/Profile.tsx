@@ -14,19 +14,19 @@ const Profile: FC = () => {
 	const isWriterRole = isWriter(user);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	// Common fields for all users
+	// common fields for all users
 	const [email, setEmail] = useState(user?.email || "");
 	const [profileImageUrl, setProfileImageUrl] = useState(
 		user?.profilePicture || "",
 	);
 
-	// Password change fields
+	// password change fields
 	const [currentPassword, setCurrentPassword] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [showPasswordForm, setShowPasswordForm] = useState(false);
 
-	// Writer-specific fields
+	// writer-specific fields
 	const [websiteUrl, setWebsiteUrl] = useState("");
 	const [location, setLocation] = useState("");
 	const [professionalTitle, setProfessionalTitle] = useState("");
@@ -46,18 +46,17 @@ const Profile: FC = () => {
 	const [loading, setLoading] = useState(false);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-	// Redirect to login if not authenticated
+	// redirect to login if not authenticated
 	useEffect(() => {
 		if (!user || !jwt) {
 			navigate("/login", { replace: true });
 		}
 	}, [user, jwt, navigate]);
 
-	// Helper function to format error messages
+	// helper  to format error messages
 	const formatErrorMessage = (error: any): string => {
 		if (!error) return "An unexpected error occurred";
 		
-		// Handle axios error responses
 		if (error.response?.status === 401) {
 			return "Your session has expired. Please log in again.";
 		}
@@ -88,7 +87,6 @@ const Profile: FC = () => {
 			}
 		}
 		
-		// Handle network errors
 		if (error.message === "Network Error" || !error.response) {
 			return "Network error. Please check your connection and try again.";
 		}
@@ -96,7 +94,7 @@ const Profile: FC = () => {
 		return error.message || "An unexpected error occurred";
 	};
 
-	// Helper to show error with auto-clear
+	// helper to show error with auto-clear
 	const showError = (fieldName: string, message: string) => {
 		setError(true);
 		setErrorField(fieldName);
@@ -106,7 +104,7 @@ const Profile: FC = () => {
 		setTimeout(() => setError(false), 4000);
 	};
 
-	// Helper to show success with auto-clear
+	// helper to show success with auto-clear
 	const showSuccess = (fieldName: string, message: string) => {
 		setCompleted(true);
 		setCompletedField(fieldName);
@@ -116,7 +114,7 @@ const Profile: FC = () => {
 		setTimeout(() => setCompleted(false), 3000);
 	};
 
-	// Fetch profile on mount
+	// fetch profile on mount
 	useEffect(() => {
 		if (jwt) {
 			fetchCurrentProfile();
@@ -137,7 +135,6 @@ const Profile: FC = () => {
 			}
 		} catch (error: any) {
 			console.error("Failed to fetch current profile:", error);
-			// Only auto-logout if session is expired
 			if (error.response?.status === 401) {
 				dispatch({ type: "LOGOUT" });
 			}
@@ -178,7 +175,7 @@ const Profile: FC = () => {
 				headers: { Authorization: `Bearer ${jwt}` },
 			});
 
-			// Update user context if user object was returned
+			// update user context if user object was returned
 			if (res.data && res.data.id) {
 				dispatch({
 					type: "UPDATE_USER",
@@ -301,15 +298,15 @@ const Profile: FC = () => {
 		const file = e.target.files?.[0];
 		if (!file) return;
 
-		// Validate file type
+		// validate file type
 		const validImageTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 		if (!validImageTypes.includes(file.type)) {
 			showError("profileImage", "Please upload a valid image file (JPG, PNG, WebP, or GIF)");
 			return;
 		}
 
-		// Validate file size (max 5MB)
-		const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+		// validate file size (max 5MB)
+		const maxSizeInBytes = 5 * 1024 * 1024;
 		if (file.size > maxSizeInBytes) {
 			showError("profileImage", "File size must not exceed 5MB");
 			return;
@@ -322,24 +319,24 @@ const Profile: FC = () => {
 
 		setUploadingImage(true);
 		try {
-			// Upload to Cloudinary and get URL
+			// upload to Cloudinary and get URL
 			const imageUrl = await uploadImageFile(file);
 
 			if (!imageUrl) {
 				throw new Error("Invalid image URL returned from upload");
 			}
 
-			// Update local state with the URL
+			// update local state with the URL
 			setProfileImageUrl(imageUrl);
 
-			// Send to backend
+			// send to backend
 			await axios.put(
 				USER_ENDPOINTS.UPDATE_PROFILE_IMAGE,
 				{ profileImageUrl: imageUrl },
 				{ headers: { Authorization: `Bearer ${jwt}` } },
 			);
 
-			// Update user context so navbar reflects the change immediately
+			// update user context so navbar reflects the change immediately
 			dispatch({
 				type: "UPDATE_USER",
 				payload: { ...user, profilePicture: imageUrl },
@@ -386,7 +383,6 @@ const Profile: FC = () => {
 			await axios.delete(USER_ENDPOINTS.DELETE_ACCOUNT, {
 				headers: { Authorization: `Bearer ${jwt}` },
 			});
-			// Add a slight delay before logout to show success message
 			setTimeout(() => {
 				dispatch({ type: "LOGOUT" });
 			}, 1000);
@@ -404,7 +400,6 @@ const Profile: FC = () => {
 		setShowDeleteConfirm(false);
 	};
 
-	// Show loading/redirect state if not authenticated
 	if (!user || !jwt) {
 		return (
 			<div className="profile">
@@ -422,8 +417,6 @@ const Profile: FC = () => {
 			<div className="profileWrapper">
 				<h2>{isWriterRole ? "Writer Profile" : "My Profile"}</h2>
 
-				{/* COMMON FIELDS SECTION */}
-				{/* Profile Picture */}
 				<div className="profileSection">
 					<label>Profile Picture</label>
 					<div className="profilePP">
@@ -560,7 +553,6 @@ const Profile: FC = () => {
 					)}
 				</div>
 
-				{/* WRITER-SPECIFIC FIELDS SECTION */}
 				{isWriterRole && (
 					<>
 						<div className="profileDivider"></div>
@@ -568,7 +560,6 @@ const Profile: FC = () => {
 							Writer Information
 						</h3>
 
-						{/* Professional Title */}
 						<div className="profileSection">
 							<label>Professional Title</label>
 							<input
@@ -594,7 +585,6 @@ const Profile: FC = () => {
 							</button>
 						</div>
 
-						{/* Location */}
 						<div className="profileSection">
 							<label>Location</label>
 							<input
@@ -618,7 +608,6 @@ const Profile: FC = () => {
 							</button>
 						</div>
 
-						{/* Website URL */}
 						<div className="profileSection">
 							<label>Website URL</label>
 							<input
@@ -642,7 +631,6 @@ const Profile: FC = () => {
 							</button>
 						</div>
 
-						{/* Bio */}
 						<div className="profileSection">
 							<label>Bio</label>
 							<textarea
@@ -666,7 +654,6 @@ const Profile: FC = () => {
 							</button>
 						</div>
 
-						{/* Stats Section */}
 						<div className="profileDivider"></div>
 						<div className="profileStats">
 							<div className="profileStat">
@@ -685,7 +672,6 @@ const Profile: FC = () => {
 					</>
 				)}
 
-				{/* Delete Account Button */}
 				<div className="profileDivider"></div>
 				{!showDeleteConfirm ? (
 					<button

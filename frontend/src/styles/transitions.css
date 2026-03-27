@@ -1,5 +1,3 @@
-/* Smooth page transition animations */
-
 @keyframes fadeIn {
 	from {
 		opacity: 0;
@@ -22,12 +20,10 @@
 	}
 }
 
-/* Apply fade-in animation to all pages */
 .page-transition {
 	animation: fadeIn 0.4s ease-in-out;
 }
 
-/* Smooth transitions for all major containers */
 .home,
 .write,
 .login,
@@ -43,14 +39,12 @@
 	animation: fadeIn 0.4s ease-in-out;
 }
 
-/* Smooth transitions for forms */
 .loginForm,
 .loginForm,
 .registerForm {
 	transition: opacity 0.3s ease-in-out;
 }
 
-/* Smooth transitions for buttons */
 button {
 	transition: all 0.2s ease-in-out;
 }
@@ -60,12 +54,10 @@ button:hover {
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Smooth transitions for links */
 a {
 	transition: color 0.2s ease-in-out;
 }
 
-/* Smooth transitions for input fields */
 input,
 textarea,
 select {
@@ -80,12 +72,10 @@ select:focus {
 	box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
 
-/* Smooth transitions for modal/dialog */
 .modal {
 	animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Smooth transitions for error/success messages */
 .logError,
 .profileError,
 .profileSuccess,
@@ -93,23 +83,19 @@ select:focus {
 	animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Smooth transitions for loading states */
 .loading,
 .loadingSpinner {
 	animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Smooth page content transitions */
 .app {
 	position: relative;
 }
 
-/* Navbar smooth transition */
 .top {
 	transition: all 0.3s ease-in-out;
 }
 
-/* Image transitions */
 img {
 	transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
@@ -118,7 +104,6 @@ img:hover {
 	opacity: 0.9;
 }
 
-/* Card/Container transitions */
 .postCard,
 .post,
 .comment,
