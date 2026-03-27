@@ -1,7 +1,4 @@
 services:
-  # ============================================
-  # PostgreSQL Database (Internal - data-net only)
-  # ============================================
   postgres:
     build:
       context: .
@@ -17,43 +14,39 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - data-net
-    # NO PORTS EXPOSED - Internal communication only
+    # internal communication only
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
-
-  # ============================================
-  # Spring Boot Backend (Internal - dmz-net + data-net)
-  # ============================================
   backend:
     build:
       context: .
       dockerfile: backend.Dockerfile
     container_name: spring-backend
     environment:
-      # Database Connection
+      # database Connection
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-my_pq_db}
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-postgresadmin}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-StrongPassword123!}
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
 
-      # JPA/Hibernate
+      # jpa
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       SPRING_JPA_SHOW_SQL: "false"
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
 
-      # Flyway
+      # flyway
       SPRING_FLYWAY_ENABLED: "true"
       SPRING_FLYWAY_LOCATIONS: classpath:db/migration
 
-      # JWT Configuration
+      # JWT
       APP_JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-prod}
       APP_JWT_EXPIRATION: ${JWT_EXPIRATION:-2592000000}
 
-      # Admin Configuration
+      # admin conf
       APP_ADMIN_REGISTER_CODE: ${ADMIN_REGISTER_CODE:-282828282}
 
-      # Mail Configuration (MailTrap)
+      # mail
       SPRING_MAIL_HOST: ${MAIL_HOST:-sandbox.smtp.mailtrap.io}
       SPRING_MAIL_PORT: ${MAIL_PORT:-2525}
       SPRING_MAIL_USERNAME: ${MAIL_USERNAME:-your-username}
@@ -62,12 +55,10 @@ services:
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: "false"
       SPRING_MAIL_FROM: ${MAIL_FROM:-noreply@example.com}
-
-      # Email Verification
       APP_EMAIL_VERIFICATION_EXPIRATION: ${EMAIL_VERIFICATION_EXPIRATION:-86400000}
       APP_FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000/verify-email}
 
-      # Server Configuration
+      # server configuration
       SERVER_PORT: 8080
       SERVER_SERVLET_CONTEXT_PATH: /
 
@@ -80,7 +71,7 @@ services:
     networks:
       - dmz-net
       - data-net
-    # NO PORTS EXPOSED - accessed via React proxy
+    # no ports from outside
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -90,26 +81,20 @@ services:
       timeout: 5s
       retries: 5
       start_period: 40s
-
-  # ============================================
-  # React Frontend - npm start dev server (port 3000)
-  # ============================================
   frontend:
     build:
       context: .
       dockerfile: frontend.Dockerfile
     container_name: react-frontend
     environment:
-      # Point API calls to the backend container (used by React proxy or axios baseURL)
+      # API calls to the backend container
       REACT_APP_API_URL: ${REACT_APP_API_URL:-http://backend:8080}
-      # Needed so npm start binds to all interfaces inside the container
       HOST: "0.0.0.0"
-      # Disable interactive watch mode prompts
       CI: "false"
-      # Disable browser auto-open
+      # disable browser auto-open
       BROWSER: none
     ports:
-      # Expose React dev server to host on port 3000
+      # expose React dev server to host on port 3000
       - "${FRONTEND_PORT:-3000}:3000"
     networks:
       - dmz-net
@@ -126,18 +111,12 @@ services:
       retries: 5
       start_period: 60s
 
-# ============================================
-# Networks
-# ============================================
 networks:
   dmz-net:
     driver: bridge
   data-net:
     driver: bridge
-
-# ============================================
-# Volumes
-# ============================================
+  
 volumes:
   postgres_data:
     driver: local
