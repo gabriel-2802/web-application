@@ -19,12 +19,14 @@ RUN mvn clean package -DskipTests -q
 # ============================================
 # Runtime Stage: Minimal JRE Image
 # ============================================
-FROM eclipse-temurin:25-jre-alpine
+# Java 25 - NOTE: eclipse-temurin does NOT publish a 25-jre-alpine image,
+# only 25-jdk-alpine. Using the JDK variant is the only Alpine option for Java 25.
+FROM eclipse-temurin:25-jdk-alpine
 
 WORKDIR /app
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install dumb-init for proper signal handling + curl for healthcheck
+RUN apk add --no-cache dumb-init curl netcat-openbsd
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S appgroup && \
@@ -40,8 +42,8 @@ RUN chown -R appuser:appgroup /app
 USER appuser
 
 # Health check to verify Spring Boot is running
-HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+HEALTHCHECK --interval=10s --timeout=5s --start-period=40s --retries=5 \
+    CMD nc -z localhost 8080 || exit 1
 
 # Expose internal port (not published to host)
 EXPOSE 8080
