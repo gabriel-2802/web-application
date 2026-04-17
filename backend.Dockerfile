@@ -12,7 +12,7 @@ COPY backend/src/main/resources ./src/main/resources
 
 RUN mvn clean package -DskipTests -q
 
-FROM eclipse-temurin:25-jdk-alpin
+FROM eclipse-temurin:25-jdk-alpine
 
 WORKDIR /app
 
