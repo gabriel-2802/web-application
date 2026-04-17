@@ -20,7 +20,6 @@ const VerifyEmail: FC = () => {
 		const tokenFromUrl = searchParams.get("token");
 		if (tokenFromUrl) {
 			setVerificationCode(tokenFromUrl);
-			// Auto-verify if token is present in URL
 			verifyToken(tokenFromUrl);
 		}
 	}, [searchParams]);

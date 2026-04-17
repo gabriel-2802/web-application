@@ -36,3 +36,5 @@ backend/build/
 **/application.properties
 **/node_modules
 **/.env.local
+
+frontend/node_modules

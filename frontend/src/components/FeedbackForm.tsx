@@ -128,7 +128,6 @@ const FeedbackForm: FC<FeedbackFormProps> = ({ open, onClose, onSuccess }) => {
 					border: "1px solid var(--border-color, rgba(139, 123, 163, 0.3))",
 				}}
 			>
-				{/* Header */}
 				<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
 					<Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--accent-primary)" }}>
 						Share Your Feedback
@@ -147,7 +146,7 @@ const FeedbackForm: FC<FeedbackFormProps> = ({ open, onClose, onSuccess }) => {
 
 				<form onSubmit={handleSubmit} style={{ display: success ? "none" : "block" }}>
 
-					{/* Rating Select */}
+
 					<FormControl fullWidth sx={{ mb: 3 }}>
 						<InputLabel
 							sx={{
@@ -199,7 +198,6 @@ const FeedbackForm: FC<FeedbackFormProps> = ({ open, onClose, onSuccess }) => {
 						</Select>
 					</FormControl>
 
-					{/* Feedback Type Radio */}
 					<FormControl sx={{ mb: 3 }}>
 						<FormLabel sx={{ color: "var(--text-muted)", "&.Mui-focused": { color: "var(--accent-primary)" } }}>
 							Feedback Type
@@ -227,7 +225,6 @@ const FeedbackForm: FC<FeedbackFormProps> = ({ open, onClose, onSuccess }) => {
 						</RadioGroup>
 					</FormControl>
 
-					{/* Would Recommend Checkbox */}
 					<Box sx={{ mb: 3 }}>
 						<FormControlLabel
 							control={
@@ -246,7 +243,6 @@ const FeedbackForm: FC<FeedbackFormProps> = ({ open, onClose, onSuccess }) => {
 						/>
 					</Box>
 
-					{/* Feedback Textarea */}
 					<Box sx={{ mb: 3 }}>
 						<Typography sx={{ color: "var(--text-muted)", fontSize: "0.875rem", mb: 1 }}>
 							Your Feedback *
@@ -283,7 +279,6 @@ const FeedbackForm: FC<FeedbackFormProps> = ({ open, onClose, onSuccess }) => {
 						/>
 					</Box>
 
-					{/* Buttons */}
 					<Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
 						<Button
 							onClick={handleClose}
